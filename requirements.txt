@@ -1,0 +1,5 @@
+openpyxl
+pandas
+xlrd
+beautifulsoup4
+lxml
