@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>公式演示</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f5f5f5; }
+        table { border-collapse: collapse; width: 100%; background-color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        td, th { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        .header { background-color: #f8f9fa; font-weight: bold; color: #333; }
+
+        @media screen and (max-width: 768px) {
+            table { font-size: 12px; }
+            td, th { padding: 4px; }
+        }
+
+        td[title], th[title] {
+            position: relative;
+            cursor: help;
+        }
+        td[title]:after, th[title]:after {
+            content: '💬';
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            font-size: 10px;
+            color: #ff6b6b;
+        }
+        
+        /* 公式单元格样式 */
+        .formula-cell {
+            position: relative;
+            background: linear-gradient(135deg, #f8f9ff 0%, #e6f3ff 100%);
+            border-left: 3px solid #4472C4;
+        }
+        
+        .formula-cell:hover {
+            background: linear-gradient(135deg, #e6f3ff 0%, #cce7ff 100%);
+        }
+        
+        .formula-indicator {
+            position: absolute;
+            top: 1px;
+            left: 2px;
+            font-size: 10px;
+            color: #4472C4;
+            font-weight: bold;
+            pointer-events: none;
+        }
+        
+        .formula-result {
+            padding-left: 12px;
+        }
+        
+        .formula-error {
+            color: #dc3545;
+            font-weight: bold;
+            background-color: #f8d7da;
+        }
+        
+        .formula-text {
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            color: #666;
+            font-style: italic;
+        }
+        /* 生成的CSS类 */
+/* 生成的CSS类 */
+/* 粗体, 文字颜色#FFFFFF, 背景色#366092 (使用7次) */
+.bold-red-header {
+    font-weight: bold;
+    color: #FFFFFF;
+    background-color: #366092;
+}
+
+/* 11.0pt (使用245次) */
+.style-7247 {
+    font-size: 11.0pt;
+    font-family: "Calibri";
+}
+
+    </style>
+</head>
+<body>
+<table  border="1" 
+cellspacing="0" 
+cellpadding="4">
+    <tr>
+        <th class="bold-red-header">项目</th>
+        <th class="bold-red-header">单价</th>
+        <th class="bold-red-header">数量</th>
+        <th class="bold-red-header">小计</th>
+        <th class="bold-red-header">折扣率</th>
+        <th class="bold-red-header">实际金额</th>
+        <th class="bold-red-header">备注</th>
+    </tr>
+    <tr>
+        <td class="style-7247">笔记本电脑</td>
+        <td class="style-7247">5000</td>
+        <td class="style-7247">3</td>
+        <td class="formula-cell style-7247" title="公式: =B2*C2 (复杂公式)" data-formula="=B2*C2"><span class="formula-indicator">ƒ</span><span class="formula-result">15000</span></td>
+        <td class="style-7247">0.1</td>
+        <td class="formula-cell style-7247" title="公式: =D2*(1-E2) (复杂公式)" data-formula="=D2*(1-E2)"><span class="formula-indicator">ƒ</span><span class="formula-result">0</span></td>
+        <td class="style-7247">批量采购</td>
+    </tr>
+    <tr>
+        <td class="style-7247">鼠标</td>
+        <td class="style-7247">50</td>
+        <td class="style-7247">10</td>
+        <td class="formula-cell style-7247" title="公式: =B3*C3 (复杂公式)" data-formula="=B3*C3"><span class="formula-indicator">ƒ</span><span class="formula-result">500</span></td>
+        <td class="style-7247">0.05</td>
+        <td class="formula-cell style-7247" title="公式: =D3*(1-E3) (复杂公式)" data-formula="=D3*(1-E3)"><span class="formula-indicator">ƒ</span><span class="formula-result">0</span></td>
+        <td class="style-7247">办公用品</td>
+    </tr>
+    <tr>
+        <td class="style-7247">键盘</td>
+        <td class="style-7247">200</td>
+        <td class="style-7247">8</td>
+        <td class="formula-cell style-7247" title="公式: =B4*C4 (复杂公式)" data-formula="=B4*C4"><span class="formula-indicator">ƒ</span><span class="formula-result">1600</span></td>
+        <td class="style-7247">0.08</td>
+        <td class="formula-cell style-7247" title="公式: =D4*(1-E4) (复杂公式)" data-formula="=D4*(1-E4)"><span class="formula-indicator">ƒ</span><span class="formula-result">0</span></td>
+        <td class="style-7247">机械键盘</td>
+    </tr>
+    <tr>
+        <td class="style-7247">显示器</td>
+        <td class="style-7247">1200</td>
+        <td class="style-7247">5</td>
+        <td class="formula-cell style-7247" title="公式: =B5*C5 (复杂公式)" data-formula="=B5*C5"><span class="formula-indicator">ƒ</span><span class="formula-result">6000</span></td>
+        <td class="style-7247">0.12</td>
+        <td class="formula-cell style-7247" title="公式: =D5*(1-E5) (复杂公式)" data-formula="=D5*(1-E5)"><span class="formula-indicator">ƒ</span><span class="formula-result">0</span></td>
+        <td class="style-7247">4K显示器</td>
+    </tr>
+    <tr>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+    </tr>
+    <tr>
+        <td class="style-7247">统计信息</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+    </tr>
+    <tr>
+        <td class="style-7247">总金额</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="formula-cell style-7247" title="公式: =SUM(D2:D5) (SUM函数)" data-formula="=SUM(D2:D5)"><span class="formula-indicator">ƒ</span><span class="formula-result">0</span></td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="formula-cell style-7247" title="公式: =SUM(F2:F5) (SUM函数)" data-formula="=SUM(F2:F5)"><span class="formula-indicator">ƒ</span><span class="formula-result">0</span></td>
+        <td class="style-7247">&nbsp;</td>
+    </tr>
+    <tr>
+        <td class="style-7247">平均单价</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="formula-cell style-7247" title="公式: =AVERAGE(B2:B5) (AVERAGE函数)" data-formula="=AVERAGE(B2:B5)"><span class="formula-indicator">ƒ</span><span class="formula-result">1612.5</span></td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+    </tr>
+    <tr>
+        <td class="style-7247">最高单价</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="formula-cell style-7247" title="公式: =MAX(B2:B5) (MAX函数)" data-formula="=MAX(B2:B5)"><span class="formula-indicator">ƒ</span><span class="formula-result">5000</span></td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+    </tr>
+    <tr>
+        <td class="style-7247">最低单价</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="formula-cell style-7247" title="公式: =MIN(B2:B5) (MIN函数)" data-formula="=MIN(B2:B5)"><span class="formula-indicator">ƒ</span><span class="formula-result">50</span></td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+    </tr>
+    <tr>
+        <td class="style-7247">商品数量</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="formula-cell style-7247" title="公式: =COUNT(B2:B5) (COUNT函数)" data-formula="=COUNT(B2:B5)"><span class="formula-indicator">ƒ</span><span class="formula-result">4</span></td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+    </tr>
+    <tr>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+    </tr>
+    <tr>
+        <td class="style-7247">数学函数示例</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+    </tr>
+    <tr>
+        <td class="style-7247">平方根</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="formula-cell style-7247" title="公式: =SQRT(16) (SQRT函数)" data-formula="=SQRT(16)"><span class="formula-indicator">ƒ</span><span class="formula-result">4</span></td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">根号16</td>
+    </tr>
+    <tr>
+        <td class="style-7247">绝对值</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="formula-cell style-7247" title="公式: =ABS(-25) (ABS函数)" data-formula="=ABS(-25)"><span class="formula-indicator">ƒ</span><span class="formula-result">25</span></td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">|-25|</td>
+    </tr>
+    <tr>
+        <td class="style-7247">四舍五入</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="formula-cell style-7247" title="公式: =ROUND(3.14159,2) (ROUND函数)" data-formula="=ROUND(3.14159,2)"><span class="formula-indicator">ƒ</span><span class="formula-result">3.14</span></td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">π保留2位</td>
+    </tr>
+    <tr>
+        <td class="style-7247">幂运算</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="formula-cell style-7247" title="公式: =POWER(2,8) (POWER函数)" data-formula="=POWER(2,8)"><span class="formula-indicator">ƒ</span><span class="formula-result">256</span></td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">2的8次方</td>
+    </tr>
+    <tr>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+    </tr>
+    <tr>
+        <td class="style-7247">逻辑函数示例</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+    </tr>
+    <tr>
+        <td class="style-7247">条件判断</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="formula-cell style-7247" title="公式: =IF(D2&gt;10000,&quot;大订单&quot;,&quot;小订单&quot;) (条件公式)" data-formula="=IF(D2&gt;10000,&quot;大订单&quot;,&quot;小订单&quot;)"><span class="formula-indicator">ƒ</span><span class="formula-result">大订单</span></td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+    </tr>
+    <tr>
+        <td class="style-7247">与运算</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="formula-cell style-7247" title="公式: =AND(B2&gt;1000,C2&gt;2) (AND函数)" data-formula="=AND(B2&gt;1000,C2&gt;2)"><span class="formula-indicator">ƒ</span><span class="formula-result">True</span></td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">价格&gt;1000且数量&gt;2</td>
+    </tr>
+    <tr>
+        <td class="style-7247">或运算</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="formula-cell style-7247" title="公式: =OR(E2&gt;0.1,F2&gt;5000) (OR函数)" data-formula="=OR(E2&gt;0.1,F2&gt;5000)"><span class="formula-indicator">ƒ</span><span class="formula-result">True</span></td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">折扣&gt;10%或金额&gt;5000</td>
+    </tr>
+    <tr>
+        <td class="style-7247">非运算</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="formula-cell style-7247" title="公式: =NOT(B2&lt;100) (NOT函数)" data-formula="=NOT(B2&lt;100)"><span class="formula-indicator">ƒ</span><span class="formula-result">False</span></td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">单价不小于100</td>
+    </tr>
+    <tr>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+    </tr>
+    <tr>
+        <td class="style-7247">文本函数示例</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+    </tr>
+    <tr>
+        <td class="style-7247">文本长度</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="formula-cell style-7247" title="公式: =LEN(A2) (LEN函数)" data-formula="=LEN(A2)"><span class="formula-indicator">ƒ</span><span class="formula-result">5</span></td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">项目名称长度</td>
+    </tr>
+    <tr>
+        <td class="style-7247">文本截取</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="formula-cell style-7247" title="公式: =LEFT(A2,2) (LEFT函数)" data-formula="=LEFT(A2,2)"><span class="formula-indicator">ƒ</span><span class="formula-result">笔记</span></td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">取前2个字符</td>
+    </tr>
+    <tr>
+        <td class="style-7247">文本连接</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="formula-cell style-7247" title="公式: =CONCATENATE(A2,&quot;-&quot;,G2) (CONCATENATE函数)" data-formula="=CONCATENATE(A2,&quot;-&quot;,G2)"><span class="formula-indicator">ƒ</span><span class="formula-result">笔记本电脑-批量采购</span></td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">项目-备注</td>
+    </tr>
+    <tr>
+        <td class="style-7247">大写转换</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="formula-cell style-7247" title="公式: =UPPER(&quot;hello&quot;) (UPPER函数)" data-formula="=UPPER(&quot;hello&quot;)"><span class="formula-indicator">ƒ</span><span class="formula-result">HELLO</span></td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">转大写</td>
+    </tr>
+    <tr>
+        <td class="style-7247">小写转换</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="formula-cell style-7247" title="公式: =LOWER(&quot;WORLD&quot;) (LOWER函数)" data-formula="=LOWER(&quot;WORLD&quot;)"><span class="formula-indicator">ƒ</span><span class="formula-result">world</span></td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">转小写</td>
+    </tr>
+    <tr>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+    </tr>
+    <tr>
+        <td class="style-7247">错误处理示例</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+    </tr>
+    <tr>
+        <td class="style-7247">除零错误</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="formula-cell formula-error style-7247" title="公式: =10&#x2F;0 (数学运算) [错误: #DIV&#x2F;0!]" data-formula="=10&#x2F;0"><span class="formula-indicator">ƒ</span><span class="formula-result">#DIV/0!</span></td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">#DIV&#x2F;0!</td>
+    </tr>
+    <tr>
+        <td class="style-7247">引用错误</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="formula-cell style-7247" title="公式: =Z999 (单元格引用)" data-formula="=Z999"><span class="formula-indicator">ƒ</span><span class="formula-result">0</span></td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">超出范围</td>
+    </tr>
+    <tr>
+        <td class="style-7247">函数错误</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="formula-cell formula-error style-7247" title="公式: =UNKNOWN(1,2) (UNKNOWN函数) [错误: #NAME?]" data-formula="=UNKNOWN(1,2)"><span class="formula-indicator">ƒ</span><span class="formula-result">#NAME?</span></td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">&nbsp;</td>
+        <td class="style-7247">不支持的函数</td>
+    </tr>
+</table>
+
+    <script>
+        // 为带有title属性的单元格添加交互效果
+        document.addEventListener('DOMContentLoaded', function() {
+            const cells = document.querySelectorAll('td[title], th[title]');
+            cells.forEach(cell => {
+                cell.addEventListener('mouseenter', function() {
+                    this.style.backgroundColor = '#f0f8ff';
+                });
+                cell.addEventListener('mouseleave', function() {
+                    this.style.backgroundColor = '';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
