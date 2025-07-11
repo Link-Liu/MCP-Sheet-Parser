@@ -9,9 +9,10 @@ from unittest.mock import patch, MagicMock
 
 from mcp_sheet_parser.performance import (
     ProgressTracker, MemoryMonitor, StreamingExcelParser,
-    PerformanceConfig, PerformanceOptimizer, create_progress_callback,
+    PerformanceOptimizer, create_progress_callback,
     benchmark_performance
 )
+from mcp_sheet_parser.config.performance import PerformanceConfig
 from mcp_sheet_parser.config import Config
 
 

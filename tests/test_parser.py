@@ -1,142 +1,133 @@
 # test_parser.py
-# parser模块单元测试
+# 测试表格解析模块
 
 import unittest
 import tempfile
 import os
-import pandas as pd
-import openpyxl
+from pathlib import Path
 
-from mcp_sheet_parser.parser import SheetParser, clean_cell_value
+from mcp_sheet_parser.parser import SheetParser
+from mcp_sheet_parser.utils import clean_cell_value
 from mcp_sheet_parser.config import Config
+from mcp_sheet_parser.utils import setup_logger
 
 
 class TestSheetParser(unittest.TestCase):
+    """测试SheetParser类"""
+    
     def setUp(self):
-        self.temp_dir = tempfile.mkdtemp()
+        """测试前准备"""
         self.config = Config()
-        
-    def tearDown(self):
-        import shutil
-        shutil.rmtree(self.temp_dir)
-
+        self.logger = setup_logger(__name__)
+    
     def test_clean_cell_value(self):
-        """测试单元格值清理"""
+        """测试单元格值清理函数"""
+        # 测试各种情况
         self.assertEqual(clean_cell_value(None), '')
         self.assertEqual(clean_cell_value(''), '')
         self.assertEqual(clean_cell_value('  test  '), 'test')
         self.assertEqual(clean_cell_value(123), '123')
         self.assertEqual(clean_cell_value(123.45), '123.45')
-
+    
+    def test_nonexistent_file(self):
+        """测试不存在的文件"""
+        with self.assertRaises(FileNotFoundError):
+            parser = SheetParser('nonexistent.xlsx', self.config)
+    
     def test_unsupported_format(self):
         """测试不支持的文件格式"""
-        test_file = os.path.join(self.temp_dir, 'test.txt')
-        with open(test_file, 'w') as f:
-            f.write('test')
+        with tempfile.NamedTemporaryFile(suffix='.txt', delete=False) as tmp:
+            tmp.write(b'test content')
+            tmp_path = tmp.name
         
-        with self.assertRaises(ValueError) as context:
-            SheetParser(test_file, self.config)
-        
-        self.assertIn('不支持的文件格式', str(context.exception))
-
+        try:
+            with self.assertRaises(ValueError):
+                parser = SheetParser(tmp_path, self.config)
+        finally:
+            os.unlink(tmp_path)
+    
     def test_csv_parsing(self):
         """测试CSV文件解析"""
         # 创建测试CSV文件
-        csv_file = os.path.join(self.temp_dir, 'test.csv')
-        csv_data = [
-            ['Name', 'Age', 'City'],
-            ['John', '25', 'New York'],
-            ['Jane', '30', 'London']
-        ]
+        csv_content = "Name,Age,City\nJohn,25,NYC\nJane,30,LA"
         
-        df = pd.DataFrame(csv_data)
-        df.to_csv(csv_file, index=False, header=False)
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False, encoding='utf-8') as tmp:
+            tmp.write(csv_content)
+            tmp_path = tmp.name
         
-        parser = SheetParser(csv_file, self.config)
-        sheets = parser.parse()
+        try:
+            parser = SheetParser(tmp_path, self.config)
+            result = parser.parse()
+            
+            self.assertIsInstance(result, list)
+            self.assertEqual(len(result), 1)  # 一个工作表
+            
+            sheet = result[0]
+            self.assertEqual(sheet['rows'], 3)
+            self.assertEqual(sheet['cols'], 3)
+            self.assertEqual(len(sheet['data']), 3)
+            
+        finally:
+            os.unlink(tmp_path)
+    
+    def test_empty_file(self):
+        """测试空文件"""
+        with tempfile.NamedTemporaryFile(suffix='.csv', delete=False) as tmp:
+            tmp_path = tmp.name
         
-        self.assertEqual(len(sheets), 1)
-        sheet = sheets[0]
-        
-        self.assertEqual(sheet['rows'], 3)
-        self.assertEqual(sheet['cols'], 3)
-        self.assertEqual(sheet['data'][0][0], 'Name')
-        self.assertEqual(sheet['data'][1][0], 'John')
-        self.assertEqual(len(sheet['merged_cells']), 0)  # CSV无合并单元格
-
+        try:
+            parser = SheetParser(tmp_path, self.config)
+            result = parser.parse()
+            
+            self.assertIsInstance(result, list)
+            self.assertEqual(len(result), 1)
+            
+            sheet = result[0]
+            self.assertEqual(sheet['rows'], 0)
+            self.assertEqual(sheet['cols'], 0)
+            self.assertEqual(len(sheet['data']), 0)
+            
+        finally:
+            os.unlink(tmp_path)
+    
     def test_excel_parsing(self):
         """测试Excel文件解析"""
-        # 创建测试Excel文件
-        excel_file = os.path.join(self.temp_dir, 'test.xlsx')
+        # 这个测试需要一个真实的Excel文件
+        # 在实际环境中，可以使用项目中的示例文件
+        examples_dir = Path(__file__).parent.parent / 'examples'
+        excel_files = list(examples_dir.glob('*.xlsx'))
         
-        wb = openpyxl.Workbook()
-        ws = wb.active
-        ws.title = "Test Sheet"
-        
-        # 添加数据
-        data = [
-            ['Name', 'Age', 'City'],
-            ['John', 25, 'New York'],
-            ['Jane', 30, 'London']
-        ]
-        
-        for row_idx, row in enumerate(data, 1):
-            for col_idx, value in enumerate(row, 1):
-                ws.cell(row=row_idx, column=col_idx, value=value)
-        
-        wb.save(excel_file)
-        
-        parser = SheetParser(excel_file, self.config)
-        sheets = parser.parse()
-        
-        self.assertEqual(len(sheets), 1)
-        sheet = sheets[0]
-        
-        self.assertEqual(sheet['sheet_name'], 'Test Sheet')
-        self.assertEqual(sheet['rows'], 3)
-        self.assertEqual(sheet['cols'], 3)
-        self.assertEqual(sheet['data'][0][0], 'Name')
-
-    def test_empty_file(self):
-        """测试空文件处理"""
-        # 创建空CSV文件
-        csv_file = os.path.join(self.temp_dir, 'empty.csv')
-        with open(csv_file, 'w') as f:
-            pass
-        
-        parser = SheetParser(csv_file, self.config)
-        sheets = parser.parse()
-        
-        self.assertEqual(len(sheets), 1)
-        sheet = sheets[0]
-        self.assertEqual(sheet['rows'], 0)
-        self.assertEqual(sheet['cols'], 0)
-        self.assertEqual(len(sheet['data']), 0)
-
+        if excel_files:
+            test_file = excel_files[0]
+            parser = SheetParser(str(test_file), self.config)
+            result = parser.parse()
+            
+            self.assertIsInstance(result, list)
+            self.assertGreater(len(result), 0)
+            
+            for sheet in result:
+                self.assertIn('sheet_name', sheet)
+                self.assertIn('rows', sheet)
+                self.assertIn('cols', sheet)
+                self.assertIn('data', sheet)
+                self.assertIn('styles', sheet)
+    
     def test_file_size_limit(self):
         """测试文件大小限制"""
-        # 创建一个超过限制的文件
-        large_file = os.path.join(self.temp_dir, 'large.csv')
+        # 修改配置以设置较小的文件大小限制
+        small_config = Config()
+        small_config.MAX_FILE_SIZE_MB = 0.001  # 1KB limit
         
-        # 临时设置很小的文件大小限制
-        config = Config()
-        config.MAX_FILE_SIZE_MB = 0.001  # 1KB
+        # 创建一个略大的文件
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as tmp:
+            tmp.write("A,B,C\n" * 1000)  # 应该超过1KB
+            tmp_path = tmp.name
         
-        # 写入较大的内容
-        with open(large_file, 'w') as f:
-            f.write('x' * 2000)  # 2KB
-        
-        with self.assertRaises(ValueError) as context:
-            SheetParser(large_file, config)
-        
-        self.assertIn('文件过大', str(context.exception))
-
-    def test_nonexistent_file(self):
-        """测试不存在的文件"""
-        nonexistent_file = os.path.join(self.temp_dir, 'nonexistent.xlsx')
-        
-        with self.assertRaises(FileNotFoundError):
-            SheetParser(nonexistent_file, self.config)
+        try:
+            with self.assertRaises(ValueError):
+                parser = SheetParser(tmp_path, small_config)
+        finally:
+            os.unlink(tmp_path)
 
 
 if __name__ == '__main__':

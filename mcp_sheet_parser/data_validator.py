@@ -2,38 +2,9 @@
 # 简化的数据验证模块，专注于HTML安全
 
 import re
-import unicodedata
 from typing import Any
 
-
-def clean_cell_value(value: Any) -> str:
-    """
-    清理单元格值用于HTML输出
-    
-    Args:
-        value: 原始值
-        
-    Returns:
-        清理后的字符串
-    """
-    if value is None:
-        return ''
-    
-    str_value = str(value).strip()
-    
-    if not str_value:
-        return ''
-    
-    # 移除控制字符
-    cleaned = re.sub(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]', '', str_value)
-    
-    # 标准化Unicode字符
-    cleaned = unicodedata.normalize('NFKC', cleaned)
-    
-    # 移除多余的空白字符
-    cleaned = re.sub(r'\s+', ' ', cleaned).strip()
-    
-    return cleaned
+from .utils import clean_cell_value
 
 
 def escape_html(value: Any) -> str:
