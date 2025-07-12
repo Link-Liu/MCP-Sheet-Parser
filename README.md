@@ -42,7 +42,7 @@
 
 ### 克隆仓库
 ```bash
-git clone https://github.com/your-username/MCP-Sheet-Parser.git
+git clone https://github.com/Link-Liu/MCP-Sheet-Parser.git
 cd MCP-Sheet-Parser
 ```
 
