@@ -173,8 +173,84 @@ class TestStyleConfig(unittest.TestCase):
         """测试对齐映射"""
         config = StyleConfig()
         
+        # 测试基本对齐方式
         self.assertEqual(config.get_alignment_style('center'), 'center')
         self.assertEqual(config.get_vertical_alignment_style('middle'), 'middle')
+        
+        # 测试中文对齐方式
+        self.assertEqual(config.get_alignment_style('居中'), 'center')
+        self.assertEqual(config.get_alignment_style('右对齐'), 'right')
+        self.assertEqual(config.get_vertical_alignment_style('垂直居中'), 'middle')
+        self.assertEqual(config.get_vertical_alignment_style('底端对齐'), 'bottom')
+        
+        # 测试数字代码
+        self.assertEqual(config.get_alignment_style('2'), 'center')
+        self.assertEqual(config.get_alignment_style('3'), 'right')
+        self.assertEqual(config.get_vertical_alignment_style('1'), 'center')
+        self.assertEqual(config.get_vertical_alignment_style('2'), 'bottom')
+        
+        # 测试大小写不敏感
+        self.assertEqual(config.get_alignment_style('CENTER'), 'center')
+        self.assertEqual(config.get_alignment_style('Center'), 'center')
+        self.assertEqual(config.get_vertical_alignment_style('TOP'), 'top')
+        self.assertEqual(config.get_vertical_alignment_style('Top'), 'top')
+    
+    def test_alignment_validation(self):
+        """测试对齐方式验证"""
+        config = StyleConfig()
+        
+        # 测试有效对齐方式
+        self.assertTrue(config.is_valid_alignment('left'))
+        self.assertTrue(config.is_valid_alignment('center'))
+        self.assertTrue(config.is_valid_alignment('右对齐'))
+        self.assertTrue(config.is_valid_alignment('1'))
+        
+        # 测试无效对齐方式
+        self.assertFalse(config.is_valid_alignment('invalid'))
+        self.assertFalse(config.is_valid_alignment(None))
+        self.assertFalse(config.is_valid_alignment(''))
+        
+        # 测试有效垂直对齐方式
+        self.assertTrue(config.is_valid_vertical_alignment('top'))
+        self.assertTrue(config.is_valid_vertical_alignment('middle'))
+        self.assertTrue(config.is_valid_vertical_alignment('垂直居中'))
+        self.assertTrue(config.is_valid_vertical_alignment('1'))
+        
+        # 测试无效垂直对齐方式
+        self.assertFalse(config.is_valid_vertical_alignment('invalid'))
+        self.assertFalse(config.is_valid_vertical_alignment(None))
+        self.assertFalse(config.is_valid_vertical_alignment(''))
+    
+    def test_supported_alignments(self):
+        """测试支持的对齐方式列表"""
+        config = StyleConfig()
+        
+        # 测试水平对齐方式列表
+        supported_horizontal = config.get_supported_alignments()
+        expected_horizontal = ['left', 'center', 'right', 'justify']
+        self.assertEqual(set(supported_horizontal), set(expected_horizontal))
+        
+        # 测试垂直对齐方式列表
+        supported_vertical = config.get_supported_vertical_alignments()
+        expected_vertical = ['top', 'middle', 'bottom']
+        self.assertEqual(set(supported_vertical), set(expected_vertical))
+    
+    def test_edge_cases_alignment(self):
+        """测试对齐方式的边界情况"""
+        config = StyleConfig()
+        
+        # 测试None和空字符串
+        self.assertEqual(config.get_alignment_style(None), 'left')
+        self.assertEqual(config.get_alignment_style(''), 'left')
+        self.assertEqual(config.get_alignment_style('   '), 'left')
+        
+        self.assertEqual(config.get_vertical_alignment_style(None), 'top')
+        self.assertEqual(config.get_vertical_alignment_style(''), 'top')
+        self.assertEqual(config.get_vertical_alignment_style('   '), 'top')
+        
+        # 测试未知对齐方式
+        self.assertEqual(config.get_alignment_style('unknown'), 'left')
+        self.assertEqual(config.get_vertical_alignment_style('unknown'), 'top')
     
     def test_color_presets(self):
         """测试颜色预设"""

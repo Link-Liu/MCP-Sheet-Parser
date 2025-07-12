@@ -568,6 +568,10 @@ class StyleManager:
             features.append('bold')
         if style.get('italic'):
             features.append('italic')
+        if style.get('underline'):
+            features.append('underline')
+        if style.get('strike'):
+            features.append('strike')
         
         # 颜色特征
         if style.get('font_color'):
@@ -634,10 +638,16 @@ class StyleManager:
             css_props['font-weight'] = 'bold'
         if style.get('italic'):
             css_props['font-style'] = 'italic'
+        
+        # 处理下划线和删除线（支持同时存在）
+        text_decorations = []
         if style.get('underline'):
-            css_props['text-decoration'] = 'underline'
+            text_decorations.append('underline')
         if style.get('strike'):
-            css_props['text-decoration'] = 'line-through'
+            text_decorations.append('line-through')
+        
+        if text_decorations:
+            css_props['text-decoration'] = ' '.join(text_decorations)
         
         # 字体属性
         if style.get('font_size'):
@@ -647,15 +657,21 @@ class StyleManager:
         if style.get('font_color'):
             css_props['color'] = style['font_color']
         
-        # 背景和对齐
+        # 背景和对齐 - 增强处理
         if style.get('bg_color'):
             css_props['background-color'] = style['bg_color']
+        
+        # 水平对齐 - 增强处理
         if style.get('align'):
-            css_props['text-align'] = style['align']
+            align_value = self._get_alignment_value(style['align'])
+            if align_value:
+                css_props['text-align'] = align_value
+        
+        # 垂直对齐 - 增强处理
         if style.get('valign'):
-            valign_map = {'top': 'top', 'center': 'middle', 'bottom': 'bottom'}
-            if style['valign'] in valign_map:
-                css_props['vertical-align'] = valign_map[style['valign']]
+            valign_value = self._get_vertical_alignment_value(style['valign'])
+            if valign_value:
+                css_props['vertical-align'] = valign_value
         
         # 边框
         if style.get('border'):
@@ -667,6 +683,78 @@ class StyleManager:
             css_props['white-space'] = 'pre-wrap'
         
         return css_props
+    
+    def _get_alignment_value(self, alignment: str) -> str:
+        """获取水平对齐值，支持更多对齐方式"""
+        if not alignment:
+            return None
+        
+        # 使用配置中的映射
+        align_map = self.config.ALIGNMENT_MAPPING
+        alignment_str = str(alignment).strip().lower()
+        
+        # 直接映射
+        if alignment_str in align_map:
+            return align_map[alignment_str]
+        
+        # 处理数字代码
+        try:
+            if alignment_str.isdigit():
+                return align_map.get(alignment_str, 'left')
+        except (ValueError, TypeError):
+            pass
+        
+        # 处理中文对齐方式
+        chinese_mapping = {
+            '左对齐': 'left',
+            '居中': 'center', 
+            '右对齐': 'right',
+            '两端对齐': 'justify',
+            '分散对齐': 'justify',
+            '填充': 'left',
+            '常规': 'left'
+        }
+        
+        if alignment_str in chinese_mapping:
+            return chinese_mapping[alignment_str]
+        
+        # 默认返回原始值或left
+        return alignment_str if alignment_str in ['left', 'center', 'right', 'justify'] else 'left'
+    
+    def _get_vertical_alignment_value(self, alignment: str) -> str:
+        """获取垂直对齐值，支持更多对齐方式"""
+        if not alignment:
+            return None
+        
+        # 使用配置中的映射
+        valign_map = self.config.VERTICAL_ALIGNMENT_MAPPING
+        alignment_str = str(alignment).strip().lower()
+        
+        # 直接映射
+        if alignment_str in valign_map:
+            return valign_map[alignment_str]
+        
+        # 处理数字代码
+        try:
+            if alignment_str.isdigit():
+                return valign_map.get(alignment_str, 'top')
+        except (ValueError, TypeError):
+            pass
+        
+        # 处理中文垂直对齐方式
+        chinese_mapping = {
+            '顶端对齐': 'top',
+            '垂直居中': 'middle',
+            '底端对齐': 'bottom',
+            '垂直两端对齐': 'middle',
+            '垂直分散对齐': 'middle'
+        }
+        
+        if alignment_str in chinese_mapping:
+            return chinese_mapping[alignment_str]
+        
+        # 默认返回原始值或top
+        return alignment_str if alignment_str in ['top', 'middle', 'bottom'] else 'top'
 
     def _convert_border_to_css_dict(self, border: Dict[str, Any]) -> Dict[str, str]:
         """将边框转换为CSS属性字典"""
@@ -732,6 +820,10 @@ class StyleManager:
             features.append("粗体")
         if style.get('italic'):
             features.append("斜体")
+        if style.get('underline'):
+            features.append("下划线")
+        if style.get('strike'):
+            features.append("删除线")
         if style.get('font_color'):
             features.append(f"文字颜色{style['font_color']}")
         if style.get('bg_color'):

@@ -237,6 +237,105 @@
             box-shadow: 0 6px 20px rgba(0,0,0,0.3);
         }
 
+        .chart-showcase {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .chart-showcase h2 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .chart-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .chart-feature {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+        }
+
+        .chart-feature h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .chart-types-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 10px;
+        }
+
+        .chart-type {
+            background: #667eea;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            text-align: center;
+            font-size: 0.9em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .chart-type:hover {
+            background: #5a67d8;
+            transform: scale(1.05);
+        }
+
+        .chart-feature ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .chart-feature li {
+            padding: 8px 0;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .chart-feature li:before {
+            content: "📊";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+        }
+
+        .chart-demo-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .chart-demo-btn {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .chart-demo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
         .footer {
             text-align: center;
             color: white;
@@ -261,6 +360,19 @@
                 flex-direction: column;
                 align-items: center;
             }
+            
+            .chart-features {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart-types-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .chart-demo-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
         }
     </style>
 </head>
@@ -281,12 +393,12 @@
                 <div class="stat-label">精美主题</div>
             </div>
             <div class="stat-card">
-                <span class="stat-number">100%</span>
-                <div class="stat-label">任务完成</div>
+                <span class="stat-number">10</span>
+                <div class="stat-label">图表类型</div>
             </div>
             <div class="stat-card">
-                <span class="stat-number">∞</span>
-                <div class="stat-label">扩展可能</div>
+                <span class="stat-number">100%</span>
+                <div class="stat-label">任务完成</div>
             </div>
         </div>
 
@@ -327,6 +439,15 @@
                         <li>防止XSS攻击</li>
                         <li>文件路径验证</li>
                         <li>内容过滤机制</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>📊 图表转换</h3>
+                    <ul>
+                        <li>支持10种图表类型</li>
+                        <li>SVG矢量图形输出</li>
+                        <li>响应式图表设计</li>
+                        <li>多种质量选项</li>
                     </ul>
                 </div>
             </div>
@@ -393,11 +514,51 @@
             </div>
         </div>
 
+        <div class="chart-showcase">
+            <h2>📊 图表转换功能</h2>
+            <div class="chart-features">
+                <div class="chart-feature">
+                    <h3>🎯 支持的图表类型</h3>
+                    <div class="chart-types-grid">
+                        <div class="chart-type">柱状图</div>
+                        <div class="chart-type">饼图</div>
+                        <div class="chart-type">折线图</div>
+                        <div class="chart-type">面积图</div>
+                        <div class="chart-type">散点图</div>
+                        <div class="chart-type">气泡图</div>
+                        <div class="chart-type">环形图</div>
+                        <div class="chart-type">雷达图</div>
+                        <div class="chart-type">仪表图</div>
+                        <div class="chart-type">组合图</div>
+                    </div>
+                </div>
+                <div class="chart-feature">
+                    <h3>✨ 图表特性</h3>
+                    <ul>
+                        <li>SVG矢量图形，高质量输出</li>
+                        <li>响应式设计，自适应屏幕</li>
+                        <li>多种质量选项（低/中/高）</li>
+                        <li>主题化图表样式</li>
+                        <li>交互式图表元素</li>
+                        <li>支持自定义尺寸</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="chart-demo-buttons">
+                <a href="chart_basic.html" class="chart-demo-btn">基础图表</a>
+                <a href="chart_high_quality.html" class="chart-demo-btn">高质量图表</a>
+                <a href="chart_responsive.html" class="chart-demo-btn">响应式图表</a>
+                <a href="chart_minimal.html" class="chart-demo-btn">极简主题</a>
+                <a href="chart_dark.html" class="chart-demo-btn">暗色主题</a>
+            </div>
+        </div>
+
         <div class="demo-section">
             <h2>🎮 演示体验</h2>
             <div class="demo-buttons">
                 <a href="format-support.html" class="demo-btn">格式支持演示</a>
                 <a href="theme-showcase.html" class="demo-btn">主题展示</a>
+                <a href="chart-showcase.html" class="demo-btn">图表功能展示</a>
                 <a href="basic_conversion.html" class="demo-btn">基础转换</a>
                 <a href="complex_features.html" class="demo-btn">复杂功能</a>
                 <a href="multi_sheet.html" class="demo-btn">多工作表</a>
@@ -407,6 +568,7 @@
         <div class="footer">
             <p>🚀 MCP-Sheet-Parser - 让表格转换变得简单高效</p>
             <p>支持样式、公式、图表、注释、超链接等完整功能</p>
+            <p>📊 强大的图表转换功能，支持10种图表类型，SVG矢量输出</p>
         </div>
     </div>
 </body>

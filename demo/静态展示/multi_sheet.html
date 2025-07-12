@@ -34,6 +34,13 @@ th { background-color: #f8f9fa; font-weight: bold; color: #333; }
   body { margin: 0; background: white; }
   table { page-break-inside: avoid; }
 }
+.charts-container { margin: 20px 0; }
+.chart-item { margin-bottom: 30px; border: 1px solid #ddd; border-radius: 8px; padding: 15px; background: #f9f9f9; }
+.chart-title { margin: 0 0 15px 0; color: #333; font-size: 18px; font-weight: bold; }
+.chart-content { text-align: center; }
+.chart-content svg { max-width: 100%; height: auto; border: 1px solid #ccc; border-radius: 4px; }
+.chart-placeholder { border: 2px dashed #ccc; border-radius: 4px; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #f5f5f5; color: #666; }
+.chart-placeholder p { margin: 5px 0; }
 </style>
 </head>
 <body>
@@ -41,130 +48,130 @@ th { background-color: #f8f9fa; font-weight: bold; color: #333; }
 <h2>员工信息</h2>
 <table>
 <tr>
-<th style="font-size: 11.0px; font-family: "Calibri", sans-serif">姓名</th>
-<th style="font-size: 11.0px; font-family: "Calibri", sans-serif">年龄</th>
-<th style="font-size: 11.0px; font-family: "Calibri", sans-serif">部门</th>
-<th style="font-size: 11.0px; font-family: "Calibri", sans-serif">薪资</th>
-<th style="font-size: 11.0px; font-family: "Calibri", sans-serif">入职日期</th>
+<th style="font-size: 11.0px; font-family: 'Calibri', sans-serif">姓名</th>
+<th style="font-size: 11.0px; font-family: 'Calibri', sans-serif">年龄</th>
+<th style="font-size: 11.0px; font-family: 'Calibri', sans-serif">部门</th>
+<th style="font-size: 11.0px; font-family: 'Calibri', sans-serif">薪资</th>
+<th style="font-size: 11.0px; font-family: 'Calibri', sans-serif">入职日期</th>
 </tr>
 <tr>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">张三</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">25</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">技术部</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">8000</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">2020-01-15</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">张三</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">25</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">技术部</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">8000</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">2020-01-15</td>
 </tr>
 <tr>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">李四</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">30</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">市场部</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">12000</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">2019-03-20</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">李四</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">30</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">市场部</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">12000</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">2019-03-20</td>
 </tr>
 <tr>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">王五</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">35</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">人事部</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">9000</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">2018-07-10</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">王五</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">35</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">人事部</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">9000</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">2018-07-10</td>
 </tr>
 <tr>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">赵六</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">28</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">财务部</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">10000</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">2021-02-28</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">赵六</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">28</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">财务部</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">10000</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">2021-02-28</td>
 </tr>
 <tr>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">钱七</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">32</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">技术部</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">15000</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">2017-11-05</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">钱七</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">32</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">技术部</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">15000</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">2017-11-05</td>
 </tr>
 </table>
 <h2>销售数据</h2>
 <table>
 <tr>
-<th style="font-size: 11.0px; font-family: "Calibri", sans-serif">产品</th>
-<th style="font-size: 11.0px; font-family: "Calibri", sans-serif">单价</th>
-<th style="font-size: 11.0px; font-family: "Calibri", sans-serif">数量</th>
-<th style="font-size: 11.0px; font-family: "Calibri", sans-serif">折扣</th>
-<th style="font-size: 11.0px; font-family: "Calibri", sans-serif">小计</th>
-<th style="font-size: 11.0px; font-family: "Calibri", sans-serif">备注</th>
+<th style="font-size: 11.0px; font-family: 'Calibri', sans-serif">产品</th>
+<th style="font-size: 11.0px; font-family: 'Calibri', sans-serif">单价</th>
+<th style="font-size: 11.0px; font-family: 'Calibri', sans-serif">数量</th>
+<th style="font-size: 11.0px; font-family: 'Calibri', sans-serif">折扣</th>
+<th style="font-size: 11.0px; font-family: 'Calibri', sans-serif">小计</th>
+<th style="font-size: 11.0px; font-family: 'Calibri', sans-serif">备注</th>
 </tr>
 <tr>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">产品A</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">100</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">10</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">0.1</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif" title="公式: =B2*C2*(1-D2) (complex)"><span class="formula-indicator">ƒ</span><span class="formula-result">900</span></td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">热销产品</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">产品A</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">100</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">10</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">0.1</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif" title="公式: =B2*C2*(1-D2) (complex)"><span class="formula-indicator">ƒ</span><span class="formula-result">900</span></td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">热销产品</td>
 </tr>
 <tr>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">产品B</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">200</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">5</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">0.2</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif" title="公式: =B3*C3*(1-D3) (complex)"><span class="formula-indicator">ƒ</span><span class="formula-result">800</span></td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">新品上市</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">产品B</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">200</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">5</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">0.2</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif" title="公式: =B3*C3*(1-D3) (complex)"><span class="formula-indicator">ƒ</span><span class="formula-result">800</span></td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">新品上市</td>
 </tr>
 <tr>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">产品C</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">150</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">8</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">0.15</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif" title="公式: =B4*C4*(1-D4) (complex)"><span class="formula-indicator">ƒ</span><span class="formula-result">1020</span></td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">库存充足</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">产品C</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">150</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">8</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">0.15</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif" title="公式: =B4*C4*(1-D4) (complex)"><span class="formula-indicator">ƒ</span><span class="formula-result">1020</span></td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">库存充足</td>
 </tr>
 <tr>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">产品D</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">300</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">3</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">0.05</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif" title="公式: =B5*C5*(1-D5) (complex)"><span class="formula-indicator">ƒ</span><span class="formula-result">855</span></td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">限量供应</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">产品D</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">300</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">3</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">0.05</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif" title="公式: =B5*C5*(1-D5) (complex)"><span class="formula-indicator">ƒ</span><span class="formula-result">855</span></td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">限量供应</td>
 </tr>
 <tr>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">产品E</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">250</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">12</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">0.25</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif" title="公式: =B6*C6*(1-D6) (complex)"><span class="formula-indicator">ƒ</span><span class="formula-result">2250</span></td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">促销中</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">产品E</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">250</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">12</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">0.25</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif" title="公式: =B6*C6*(1-D6) (complex)"><span class="formula-indicator">ƒ</span><span class="formula-result">2250</span></td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">促销中</td>
 </tr>
 </table>
 <h2>统计信息</h2>
 <table>
 <tr>
-<th style="font-size: 11.0px; font-family: "Calibri", sans-serif">统计项目</th>
-<th style="font-size: 11.0px; font-family: "Calibri", sans-serif">数值</th>
-<th style="font-size: 11.0px; font-family: "Calibri", sans-serif">百分比</th>
+<th style="font-size: 11.0px; font-family: 'Calibri', sans-serif">统计项目</th>
+<th style="font-size: 11.0px; font-family: 'Calibri', sans-serif">数值</th>
+<th style="font-size: 11.0px; font-family: 'Calibri', sans-serif">百分比</th>
 </tr>
 <tr>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">总员工数</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">5</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">100%</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">总员工数</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">5</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">100%</td>
 </tr>
 <tr>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">技术部</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">2</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">40%</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">技术部</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">2</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">40%</td>
 </tr>
 <tr>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">市场部</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">1</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">20%</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">市场部</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">1</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">20%</td>
 </tr>
 <tr>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">人事部</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">1</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">20%</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">人事部</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">1</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">20%</td>
 </tr>
 <tr>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">财务部</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">1</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">20%</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">财务部</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">1</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">20%</td>
 </tr>
 </table>
 </body>

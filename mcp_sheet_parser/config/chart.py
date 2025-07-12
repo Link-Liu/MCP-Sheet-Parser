@@ -10,7 +10,7 @@ class ChartConfig:
     """图表转换配置"""
     
     # 基本配置
-    ENABLE_CHART_CONVERSION: bool = True
+    ENABLE_CHART_CONVERSION: bool = False
     CHART_OUTPUT_FORMAT: str = 'svg'  # svg, png, canvas
     CHART_EMBED_MODE: str = 'inline'  # inline, external
     

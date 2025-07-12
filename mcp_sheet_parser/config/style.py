@@ -47,24 +47,73 @@ class StyleConfig:
         
         if self.ALIGNMENT_MAPPING is None:
             self.ALIGNMENT_MAPPING = {
+                # 标准对齐方式
                 'left': 'left',
                 'center': 'center',
                 'right': 'right',
                 'justify': 'justify',
+                
+                # Excel特定对齐方式
                 'centerContinuous': 'center',
                 'distributed': 'justify',
                 'fill': 'left',
-                'general': 'left'
+                'general': 'left',
+                
+                # 中文对齐方式名称支持
+                '左对齐': 'left',
+                '居中': 'center',
+                '右对齐': 'right',
+                '两端对齐': 'justify',
+                '分散对齐': 'justify',
+                '填充': 'left',
+                '常规': 'left',
+                
+                # 英文别名
+                'start': 'left',
+                'end': 'right',
+                'middle': 'center',
+                'justified': 'justify',
+                'distribute': 'justify',
+                
+                # 数字代码映射（某些Excel版本使用）
+                '0': 'general',
+                '1': 'left',
+                '2': 'center',
+                '3': 'right',
+                '4': 'fill',
+                '5': 'justify',
+                '6': 'centerContinuous',
+                '7': 'distributed'
             }
         
         if self.VERTICAL_ALIGNMENT_MAPPING is None:
             self.VERTICAL_ALIGNMENT_MAPPING = {
+                # 标准垂直对齐方式
                 'top': 'top',
                 'center': 'middle',
-                'middle': 'middle',  # 添加missing映射
+                'middle': 'middle',
                 'bottom': 'bottom',
                 'justify': 'middle',
-                'distributed': 'middle'
+                'distributed': 'middle',
+                
+                # 中文垂直对齐方式名称支持
+                '顶端对齐': 'top',
+                '垂直居中': 'middle',
+                '底端对齐': 'bottom',
+                '垂直两端对齐': 'middle',
+                '垂直分散对齐': 'middle',
+                
+                # 英文别名
+                'start': 'top',
+                'end': 'bottom',
+                'baseline': 'top',
+                
+                # 数字代码映射
+                '0': 'top',
+                '1': 'center',
+                '2': 'bottom',
+                '3': 'justify',
+                '4': 'distributed'
             }
         
         if self.COLOR_PRESETS is None:
@@ -99,22 +148,58 @@ class StyleConfig:
     
     def get_alignment_style(self, alignment: str) -> str:
         """获取对齐样式"""
-        return self.ALIGNMENT_MAPPING.get(alignment, 'left')
+        # 处理None或空字符串
+        if not alignment:
+            return 'left'
+        
+        # 转换为字符串并标准化
+        alignment_str = str(alignment).strip().lower()
+        return self.ALIGNMENT_MAPPING.get(alignment_str, 'left')
     
     def get_vertical_alignment_style(self, alignment: str) -> str:
         """获取垂直对齐样式"""
-        return self.VERTICAL_ALIGNMENT_MAPPING.get(alignment, 'top')
+        # 处理None或空字符串
+        if not alignment:
+            return 'top'
+        
+        # 转换为字符串并标准化
+        alignment_str = str(alignment).strip().lower()
+        return self.VERTICAL_ALIGNMENT_MAPPING.get(alignment_str, 'top')
     
     def get_color(self, color_name: str) -> str:
         """获取预设颜色"""
         return self.COLOR_PRESETS.get(color_name, color_name)
+    
+    def is_valid_alignment(self, alignment: str) -> bool:
+        """检查对齐方式是否有效"""
+        if not alignment:
+            return False
+        alignment_str = str(alignment).strip().lower()
+        return alignment_str in self.ALIGNMENT_MAPPING
+    
+    def is_valid_vertical_alignment(self, alignment: str) -> bool:
+        """检查垂直对齐方式是否有效"""
+        if not alignment:
+            return False
+        alignment_str = str(alignment).strip().lower()
+        return alignment_str in self.VERTICAL_ALIGNMENT_MAPPING
+    
+    def get_supported_alignments(self) -> list:
+        """获取支持的水平对齐方式列表"""
+        return list(set(self.ALIGNMENT_MAPPING.values()))
+    
+    def get_supported_vertical_alignments(self) -> list:
+        """获取支持的垂直对齐方式列表"""
+        return list(set(self.VERTICAL_ALIGNMENT_MAPPING.values()))
     
     def create_font_style(self, 
                          family: str = None, 
                          size: int = None, 
                          weight: str = 'normal',
                          style: str = 'normal',
-                         color: str = None) -> Dict[str, str]:
+                         color: str = None,
+                         underline: bool = False,
+                         strike: bool = False) -> Dict[str, str]:
         """创建字体样式"""
         styles = {}
         
@@ -133,6 +218,16 @@ class StyleConfig:
         
         if style != 'normal':
             styles['font-style'] = style
+        
+        # 处理下划线和删除线
+        text_decorations = []
+        if underline:
+            text_decorations.append('underline')
+        if strike:
+            text_decorations.append('line-through')
+        
+        if text_decorations:
+            styles['text-decoration'] = ' '.join(text_decorations)
         
         if color:
             styles['color'] = self.get_color(color)
@@ -171,12 +266,14 @@ class StyleConfig:
                          text_align: str = None,
                          vertical_align: str = None,
                          border: str = None,
-                         padding: str = None) -> Dict[str, str]:
+                         padding: str = None,
+                         underline: bool = False,
+                         strike: bool = False) -> Dict[str, str]:
         """创建完整的单元格样式"""
         styles = {}
         
         # 字体样式
-        font_styles = self.create_font_style(font_family, font_size, font_weight, color=font_color)
+        font_styles = self.create_font_style(font_family, font_size, font_weight, color=font_color, underline=underline, strike=strike)
         styles.update(font_styles)
         
         # 背景色

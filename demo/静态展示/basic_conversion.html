@@ -34,6 +34,13 @@ th { background-color: #f8f9fa; font-weight: bold; color: #333; }
   body { margin: 0; background: white; }
   table { page-break-inside: avoid; }
 }
+.charts-container { margin: 20px 0; }
+.chart-item { margin-bottom: 30px; border: 1px solid #ddd; border-radius: 8px; padding: 15px; background: #f9f9f9; }
+.chart-title { margin: 0 0 15px 0; color: #333; font-size: 18px; font-weight: bold; }
+.chart-content { text-align: center; }
+.chart-content svg { max-width: 100%; height: auto; border: 1px solid #ccc; border-radius: 4px; }
+.chart-placeholder { border: 2px dashed #ccc; border-radius: 4px; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #f5f5f5; color: #666; }
+.chart-placeholder p { margin: 5px 0; }
 </style>
 </head>
 <body>
@@ -48,39 +55,39 @@ th { background-color: #f8f9fa; font-weight: bold; color: #333; }
 <th style="font-weight: bold; color: #FFFFFF; background-color: #366092">入职日期</th>
 </tr>
 <tr>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">张三</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">25</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">技术部</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">8000</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">2020-01-15</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">张三</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">25</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">技术部</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">8000</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">2020-01-15</td>
 </tr>
 <tr>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">李四</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">30</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">市场部</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">12000</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">2019-03-20</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">李四</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">30</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">市场部</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">12000</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">2019-03-20</td>
 </tr>
 <tr>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">王五</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">35</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">人事部</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">9000</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">2018-07-10</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">王五</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">35</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">人事部</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">9000</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">2018-07-10</td>
 </tr>
 <tr>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">赵六</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">28</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">财务部</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">10000</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">2021-02-28</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">赵六</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">28</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">财务部</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">10000</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">2021-02-28</td>
 </tr>
 <tr>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">钱七</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">32</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">技术部</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">15000</td>
-<td style="font-size: 11.0px; font-family: "Calibri", sans-serif">2017-11-05</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">钱七</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">32</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">技术部</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">15000</td>
+<td style="font-size: 11.0px; font-family: 'Calibri', sans-serif">2017-11-05</td>
 </tr>
 </table>
 </body>

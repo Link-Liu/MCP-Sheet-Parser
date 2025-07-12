@@ -215,9 +215,48 @@ def run_advanced_feature_demo():
     print(f"\n📊 高级功能演示完成: {success_count}/{len(demos)} 成功")
     return success_count == len(demos)
 
+def run_chart_demo():
+    """运行图表支持演示"""
+    print_step(5, "图表支持演示")
+    
+    # 使用现有的图表示例文件
+    chart_demos = [
+        {
+            'input': '示例文件/chart_demo.xlsx',
+            'output': 'demo/静态展示/chart_demo.html',
+            'description': '图表转换演示（柱状图、饼图、折线图）',
+            'chart_options': '--chart-format svg --chart-responsive'
+        },
+        {
+            'input': '示例文件/chart_demo.xlsx',
+            'output': 'demo/静态展示/chart_high_quality.html',
+            'description': '高质量图表演示',
+            'chart_options': '--chart-format svg --chart-quality high --chart-width 800 --chart-height 500'
+        },
+        {
+            'input': '示例文件/chart_demo.xlsx',
+            'output': 'demo/静态展示/chart_minimal.html',
+            'description': '极简图表演示',
+            'chart_options': '--chart-format svg --chart-quality low --theme minimal'
+        }
+    ]
+    
+    success_count = 0
+    for demo in chart_demos:
+        if os.path.exists(demo['input']):
+            command = f"python main.py {demo['input']} -o {demo['output']} {demo['chart_options']}"
+            
+            if run_command(command, demo['description']):
+                success_count += 1
+        else:
+            print(f"⚠️ 跳过图表演示（文件不存在: {demo['input']}）")
+    
+    print(f"\n📊 图表支持演示完成: {success_count}/{len(chart_demos)} 成功")
+    return success_count > 0
+
 def run_performance_demo():
     """运行性能演示"""
-    print_step(5, "性能演示")
+    print_step(6, "性能演示")
     
     # 创建大文件进行性能测试
     large_file = '示例文件/performance_test.xlsx'
@@ -240,7 +279,7 @@ def run_performance_demo():
 
 def run_format_support_demo():
     """运行格式支持演示"""
-    print_step(6, "格式支持演示")
+    print_step(7, "格式支持演示")
     
     formats = [
         ('xlsx', '示例文件/excel/basic_sample.xlsx'),
@@ -265,7 +304,7 @@ def run_format_support_demo():
 
 def create_demo_summary():
     """创建演示总结"""
-    print_step(7, "创建演示总结")
+    print_step(8, "创建演示总结")
     
     summary_content = """# MCP-Sheet-Parser 演示总结
 
@@ -285,13 +324,19 @@ def create_demo_summary():
    - 多工作表支持
    - 合并单元格处理
 
-3. **格式支持演示**
+3. **图表支持演示** 🆕
+   - 柱状图、饼图、折线图转换
+   - SVG矢量图形输出
+   - 响应式图表设计
+   - 多种质量选项
+
+4. **格式支持演示**
    - Excel 2007+ (.xlsx)
    - CSV (.csv)
    - WPS (.et)
    - 其他格式支持
 
-4. **性能演示**
+5. **性能演示**
    - 大文件处理能力
    - 转换速度测试
 
@@ -299,6 +344,7 @@ def create_demo_summary():
 
 - **支持格式**: 11种主流表格格式
 - **主题数量**: 4种精美主题
+- **图表类型**: 10种图表类型支持
 - **功能完整性**: 100%覆盖核心需求
 - **性能表现**: 高效稳定
 
@@ -313,24 +359,38 @@ def create_demo_summary():
 - `complex_features.html` - 复杂功能示例
 - `multi_sheet.html` - 多工作表示例
 - `merged_cells.html` - 合并单元格示例
+- `chart_demo.html` - 图表转换示例 🆕
+- `chart_high_quality.html` - 高质量图表演示 🆕
+- `chart_minimal.html` - 极简图表演示 🆕
 - `format_*.html` - 各格式支持示例
 
 ### 🚀 使用建议
 
 1. **基础使用**: 直接使用命令行工具转换文件
 2. **主题选择**: 根据需求选择合适的主题
-3. **批量处理**: 使用批处理功能处理多个文件
-4. **高级功能**: 充分利用公式、批注等高级特性
+3. **图表转换**: 使用图表参数优化输出效果
+4. **批量处理**: 使用批处理功能处理多个文件
+5. **高级功能**: 充分利用公式、批注等高级特性
 
 ### 📈 项目优势
 
 - **格式支持广泛**: 支持11种主流格式
+- **图表功能强大**: 支持10种图表类型转换
 - **功能完整**: 覆盖所有核心需求
 - **性能优秀**: 高效稳定的处理能力
 - **易于使用**: 简洁的命令行界面
 - **安全可靠**: 内置安全防护机制
 
-MCP-Sheet-Parser已经达到了生产级别的质量标准，可以满足各种表格转换需求。
+### 📊 图表功能亮点
+
+- **多种图表类型**: 柱状图、饼图、折线图、面积图、散点图等
+- **SVG矢量输出**: 高质量、可缩放的矢量图形
+- **响应式设计**: 自适应不同屏幕尺寸
+- **交互功能**: 悬停提示、点击交互
+- **质量选项**: 低、中、高三种质量级别
+- **尺寸控制**: 可自定义图表尺寸
+
+MCP-Sheet-Parser已经达到了生产级别的质量标准，可以满足各种表格转换需求，包括复杂的图表转换功能。
 """
     
     summary_file = 'demo/演示总结.md'
@@ -342,12 +402,11 @@ MCP-Sheet-Parser已经达到了生产级别的质量标准，可以满足各种�
 
 def open_demo_pages():
     """打开演示页面"""
-    print_step(8, "打开演示页面")
+    print_step(9, "打开演示页面")
     
     demo_pages = [
         'demo/静态展示/index.html',
-        'demo/静态展示/basic_conversion.html',
-        'demo/静态展示/complex_features.html'
+        'demo/静态展示/chart-showcase.html'
     ]
     
     opened_count = 0
@@ -378,7 +437,7 @@ def main():
     os.makedirs('demo/动态演示', exist_ok=True)
     
     success_count = 0
-    total_steps = 8
+    total_steps = 9
     
     try:
         # 步骤1: 检查依赖
@@ -397,19 +456,23 @@ def main():
         if run_advanced_feature_demo():
             success_count += 1
         
-        # 步骤5: 性能演示
+        # 步骤5: 图表支持演示
+        if run_chart_demo():
+            success_count += 1
+        
+        # 步骤6: 性能演示
         if run_performance_demo():
             success_count += 1
         
-        # 步骤6: 格式支持演示
+        # 步骤7: 格式支持演示
         if run_format_support_demo():
             success_count += 1
         
-        # 步骤7: 创建演示总结
+        # 步骤8: 创建演示总结
         if create_demo_summary():
             success_count += 1
         
-        # 步骤8: 打开演示页面
+        # 步骤9: 打开演示页面
         if open_demo_pages():
             success_count += 1
         

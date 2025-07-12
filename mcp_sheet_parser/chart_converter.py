@@ -618,8 +618,9 @@ class LineChartGenerator:
 class ChartConverter:
     """图表转换器主类"""
     
-    def __init__(self, config=None):
+    def __init__(self, config=None, file_path=None):
         self.config = config
+        self.file_path = file_path
         self.logger = logging.getLogger(__name__)
         self.styler = ChartStyler()
         
@@ -778,8 +779,16 @@ class ChartConverter:
     def process_sheet_charts(self, sheet_data: Dict[str, Any]) -> Dict[str, Any]:
         """处理工作表中的图表"""
         try:
-            # 检测或创建演示图表
-            charts = self.create_demo_charts()
+            # 首先尝试检测真实的图表
+            real_charts = self.detect_charts_in_excel(self.file_path)
+            
+            # 如果没有检测到真实图表，则不创建演示图表
+            if not real_charts:
+                self.logger.info("未检测到真实图表，跳过图表处理")
+                return sheet_data
+            
+            # 如果检测到真实图表，则处理它们
+            charts = real_charts
             
             # 生成SVG
             chart_svgs = []
@@ -797,7 +806,7 @@ class ChartConverter:
             enhanced_data = sheet_data.copy()
             enhanced_data['charts'] = chart_svgs
             
-            self.logger.info(f"处理了 {len(chart_svgs)} 个图表")
+            self.logger.info(f"处理了 {len(chart_svgs)} 个真实图表")
             return enhanced_data
             
         except Exception as e:

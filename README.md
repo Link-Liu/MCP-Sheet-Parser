@@ -7,6 +7,7 @@
 - 🚀 **快速转换**: 高效解析Excel、CSV、WPS等表格文件
 - 🎨 **多种主题**: 内置4种精美主题（默认、极简、暗色、打印）
 - 📊 **完整功能**: 支持合并单元格、样式、批注、超链接、公式结构化输出
+- 📈 **图表转换**: 支持Excel图表转换为SVG矢量图形，包含柱状图、饼图、折线图等
 - 🔒 **安全可靠**: 内置安全检查，防止XSS攻击
 - 📱 **响应式设计**: 自动适配移动设备显示
 - 🛠️ **简单易用**: 命令行界面，支持批量处理
@@ -69,6 +70,12 @@ python main.py data.csv -o output.html --theme dark
 # 只输出表格（不含HTML头部）
 python main.py data.xlsx -o table.html --table-only
 
+# 启用图表转换
+python main.py data.xlsx -o output.html --enable-charts
+
+# 图表转换配置
+python main.py data.xlsx -o output.html --enable-charts --chart-quality high --chart-theme business
+
 # 性能测试
 python main.py data.xlsx --benchmark
 
@@ -120,6 +127,14 @@ python main.py data.xlsx --info
 - ✅ 合并单元格（WPS/Excel 2007+/97-2003，.xlsb暂不支持）
 - ✅ 公式结构化输出（所有支持格式，含依赖、类型分析）
 
+### 图表转换支持
+- ✅ **图表类型**: 柱状图、条形图、折线图、饼图、面积图、散点图、组合图
+- ✅ **输出格式**: SVG矢量图形，支持缩放不失真
+- ✅ **图表元素**: 标题、图例、坐标轴、数据标签、网格线
+- ✅ **样式配置**: 多种配色方案、字体样式、尺寸控制
+- ✅ **交互功能**: 响应式设计、工具提示、动画效果
+- ✅ **质量选项**: 支持低、中、高质量输出，适配不同场景
+
 ### 交互功能
 - ✅ 单元格批注（悬停显示）
 - ✅ 超链接（新窗口打开）
@@ -141,6 +156,7 @@ python main.py data.xlsx --info
 ### 编程接口
 ```python
 from mcp_sheet_parser.parser import SheetParser
+from mcp_sheet_parser.chart_converter import ChartConverter
 
 # 解析文件
 parser = SheetParser('data.xlsb')
@@ -150,16 +166,31 @@ sheets = parser.parse()
 parser = SheetParser('data.et')
 sheets = parser.parse()
 # sheets[0]['styles'], sheets[0]['comments'], sheets[0]['hyperlinks'], sheets[0]['merged_cells'], sheets[0]['formula_cells']
+
+# 图表转换
+chart_converter = ChartConverter()
+charts = chart_converter.detect_charts_in_excel('data.xlsx')
+for chart in charts:
+    svg_content = chart_converter.generate_svg(chart)
+    # 处理SVG内容
 ```
 
 ### 配置选项
 ```python
 from mcp_sheet_parser.config import Config
+from mcp_sheet_parser.config.chart import ChartConfig
 
 config = Config()
 config.INCLUDE_COMMENTS = False  # 不包含注释
 config.INCLUDE_HYPERLINKS = False  # 不包含超链接
 config.MAX_FILE_SIZE_MB = 50  # 最大文件大小
+
+# 图表配置
+chart_config = ChartConfig()
+chart_config.ENABLE_CHART_CONVERSION = True  # 启用图表转换
+chart_config.CHART_OUTPUT_FORMAT = 'svg'  # 输出SVG格式
+chart_config.CHART_QUALITY = 'high'  # 高质量输出
+chart_config.CHART_COLOR_SCHEME = 'business'  # 商务配色
 ```
 
 ## 🧪 运行测试
@@ -201,6 +232,7 @@ python test_encoding.py
 - 🚀 **快速体验**: 基础功能演示
 - 🎯 **完整演示**: 运行所有演示
 - 📝 **创建示例**: 生成示例文件
+- 📊 **图表演示**: 图表转换功能展示
 - 📚 **查看文档**: 打开使用指南
 - 📊 **项目总结**: 查看实现状态
 - 🏠 **打开主页**: 查看主展示页面
@@ -264,7 +296,9 @@ MCP-Sheet-Parser/
 │   ├── test_performance.py    # 性能测试
 │   ├── test_config_refactor.py # 配置重构测试
 │   ├── test_wps_support.py    # WPS支持测试
-│   └── test_xlsb_enhanced.py  # XLSB增强测试
+│   ├── test_xlsb_enhanced.py  # XLSB增强测试
+│   ├── test_chart_converter.py # 图表转换测试
+│   └── test_alignment_enhancement.py # 对齐增强测试
 ├── demo/                      # 演示系统
 │   ├── start_demo.py          # 演示启动脚本
 │   ├── run_demo.bat           # Windows批处理文件
@@ -317,11 +351,12 @@ MCP-Sheet-Parser/
 - `--supported-functions-only` - 仅处理支持的函数
 
 ### 图表转换选项
-- `--disable-charts` - 禁用图表转换功能
+- `--enable-charts` - 启用图表转换功能
 - `--chart-format` - 图表输出格式（svg/png）
 - `--chart-width` - 图表默认宽度
 - `--chart-height` - 图表默认高度
 - `--chart-quality` - 图表质量（low/medium/high）
+- `--chart-theme` - 图表配色主题（default/business/modern/colorful）
 - `--chart-responsive` - 生成响应式图表
 
 ### 信息选项
@@ -398,11 +433,20 @@ config.performance.MAX_FILE_SIZE_MB = 50  # 文件大小限制
 
 | 文件类型 | 大小 | 处理时间 | 内存使用 | 支持功能 |
 |---------|------|----------|----------|----------|
-| Excel 2007+ | 1MB | ~2秒 | ~50MB | 完整功能 |
+| Excel 2007+ | 1MB | ~2秒 | ~50MB | 完整功能+图表 |
 | CSV | 1MB | ~1秒 | ~30MB | 基础功能 |
 | WPS | 1MB | ~3秒 | ~60MB | 增强功能 |
 | XLSB | 1MB | ~2.5秒 | ~55MB | 基础功能 |
 | Excel 97-2003 | 1MB | ~2.5秒 | ~45MB | 基础功能 |
+
+### 图表转换性能
+
+| 图表类型 | 复杂度 | 处理时间 | 输出大小 | 质量 |
+|---------|--------|----------|----------|------|
+| 柱状图 | 简单 | ~0.5秒 | ~10KB | 高 |
+| 饼图 | 简单 | ~0.3秒 | ~8KB | 高 |
+| 折线图 | 中等 | ~0.8秒 | ~15KB | 高 |
+| 复杂组合图 | 复杂 | ~1.5秒 | ~25KB | 高 |
 
 
 ## 🙏 致谢

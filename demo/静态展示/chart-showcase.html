@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP-Sheet-Parser - 图表转换功能展示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .header-actions {
+            margin-top: 20px;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .quick-nav {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .quick-nav h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-btn {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .feature-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .chart-types {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .chart-types h2 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+        
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .chart-item {
+            text-align: center;
+            padding: 20px;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .chart-item:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+        
+        .chart-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+        
+        .demo-section {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .demo-section h2 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+        
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .demo-card {
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .demo-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+        }
+        
+        .demo-header {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .demo-content {
+            padding: 20px;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9ff;
+        }
+        
+        .demo-placeholder {
+            text-align: center;
+            color: #666;
+        }
+        
+        .demo-placeholder .icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+        
+        .usage-section {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .usage-section h2 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+        
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        
+        .code-block .comment {
+            color: #a0aec0;
+        }
+        
+        .code-block .keyword {
+            color: #fbb6ce;
+        }
+        
+        .code-block .string {
+            color: #9ae6b4;
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            padding: 20px;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .demo-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .nav-btn {
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 图表转换功能展示</h1>
+            <p>MCP-Sheet-Parser 强大的图表转换能力</p>
+            <div class="header-actions">
+                <a href="index.html" class="back-btn">← 返回主页</a>
+            </div>
+        </div>
+        
+        <div class="quick-nav">
+            <h3>🚀 快速导航</h3>
+            <div class="nav-buttons">
+                <a href="chart_basic.html" class="nav-btn">📊 基础图表</a>
+                <a href="chart_high_quality.html" class="nav-btn">✨ 高质量</a>
+                <a href="chart_responsive.html" class="nav-btn">📱 响应式</a>
+                <a href="chart_dark.html" class="nav-btn">🌙 暗色主题</a>
+                <a href="chart_minimal.html" class="nav-btn">🎨 极简主题</a>
+            </div>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3>多种图表类型</h3>
+                <p>支持柱状图、饼图、折线图、面积图、散点图等10种主流图表类型，满足各种数据可视化需求。</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🔧</div>
+                <h3>SVG矢量输出</h3>
+                <p>生成高质量的SVG矢量图形，在任何尺寸下都保持清晰，文件大小小，加载速度快。</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3>响应式设计</h3>
+                <p>图表自动适应不同屏幕尺寸，在桌面、平板、手机等设备上都能完美显示。</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>高性能转换</h3>
+                <p>高效的图表转换算法，支持大文件处理，转换速度快，资源占用低。</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>质量可调</h3>
+                <p>提供低、中、高三种质量选项，可根据需求平衡视觉效果和文件大小。</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🎪</div>
+                <h3>主题支持</h3>
+                <p>支持多种主题样式，包括默认、暗色、极简等，图表风格与整体设计保持一致。</p>
+            </div>
+        </div>
+        
+        <div class="chart-types">
+            <h2>支持的图表类型</h2>
+            <div class="chart-grid">
+                <div class="chart-item">
+                    <div class="chart-icon">📊</div>
+                    <h4>柱状图</h4>
+                    <p>适合展示分类数据对比</p>
+                </div>
+                <div class="chart-item">
+                    <div class="chart-icon">🥧</div>
+                    <h4>饼图</h4>
+                    <p>适合展示占比关系</p>
+                </div>
+                <div class="chart-item">
+                    <div class="chart-icon">📈</div>
+                    <h4>折线图</h4>
+                    <p>适合展示趋势变化</p>
+                </div>
+                <div class="chart-item">
+                    <div class="chart-icon">📉</div>
+                    <h4>面积图</h4>
+                    <p>适合展示累积数据</p>
+                </div>
+                <div class="chart-item">
+                    <div class="chart-icon">🎯</div>
+                    <h4>散点图</h4>
+                    <p>适合展示相关性</p>
+                </div>
+                <div class="chart-item">
+                    <div class="chart-icon">🫧</div>
+                    <h4>气泡图</h4>
+                    <p>适合展示三维数据</p>
+                </div>
+                <div class="chart-item">
+                    <div class="chart-icon">⭕</div>
+                    <h4>环形图</h4>
+                    <p>饼图的变体</p>
+                </div>
+                <div class="chart-item">
+                    <div class="chart-icon">🕷️</div>
+                    <h4>雷达图</h4>
+                    <p>适合展示多维数据</p>
+                </div>
+                <div class="chart-item">
+                    <div class="chart-icon">⏱️</div>
+                    <h4>仪表图</h4>
+                    <p>适合展示进度指标</p>
+                </div>
+                <div class="chart-item">
+                    <div class="chart-icon">📋</div>
+                    <h4>组合图</h4>
+                    <p>多种图表类型组合</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>演示效果预览</h2>
+            <div class="demo-grid">
+                <a href="chart_basic.html" class="demo-card">
+                    <div class="demo-header">
+                        <h3>基础图表转换</h3>
+                    </div>
+                    <div class="demo-content">
+                        <div class="demo-placeholder">
+                            <div class="icon">📊</div>
+                            <p>默认设置转换</p>
+                            <small>平衡质量和性能</small>
+                        </div>
+                    </div>
+                </a>
+                
+                <a href="chart_high_quality.html" class="demo-card">
+                    <div class="demo-header">
+                        <h3>高质量图表</h3>
+                    </div>
+                    <div class="demo-content">
+                        <div class="demo-placeholder">
+                            <div class="icon">✨</div>
+                            <p>高质量渲染</p>
+                            <small>适合正式报告</small>
+                        </div>
+                    </div>
+                </a>
+                
+                <a href="chart_responsive.html" class="demo-card">
+                    <div class="demo-header">
+                        <h3>响应式图表</h3>
+                    </div>
+                    <div class="demo-content">
+                        <div class="demo-placeholder">
+                            <div class="icon">📱</div>
+                            <p>自适应设计</p>
+                            <small>多设备兼容</small>
+                        </div>
+                    </div>
+                </a>
+                
+                <a href="chart_dark.html" class="demo-card">
+                    <div class="demo-header">
+                        <h3>暗色主题图表</h3>
+                    </div>
+                    <div class="demo-content">
+                        <div class="demo-placeholder">
+                            <div class="icon">🌙</div>
+                            <p>暗色主题</p>
+                            <small>夜间模式友好</small>
+                        </div>
+                    </div>
+                </a>
+                
+                <a href="chart_minimal.html" class="demo-card">
+                    <div class="demo-header">
+                        <h3>极简主题图表</h3>
+                    </div>
+                    <div class="demo-content">
+                        <div class="demo-placeholder">
+                            <div class="icon">🎨</div>
+                            <p>极简风格</p>
+                            <small>简洁清爽</small>
+                        </div>
+                    </div>
+                </a>
+                
+                <a href="chart_demo.html" class="demo-card">
+                    <div class="demo-header">
+                        <h3>完整图表演示</h3>
+                    </div>
+                    <div class="demo-content">
+                        <div class="demo-placeholder">
+                            <div class="icon">📋</div>
+                            <p>完整演示</p>
+                            <small>包含所有图表类型</small>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        
+        <div class="usage-section">
+            <h2>使用方法</h2>
+            
+            <h3>基础图表转换</h3>
+            <div class="code-block">
+<span class="comment"># 基础图表转换（默认设置）</span>
+python main.py input.xlsx -o output.html
+            </div>
+            
+            <h3>高质量图表转换</h3>
+            <div class="code-block">
+<span class="comment"># 高质量图表，自定义尺寸</span>
+python main.py input.xlsx -o output.html <span class="keyword">--chart-quality</span> <span class="string">high</span> <span class="keyword">--chart-width</span> <span class="string">800</span> <span class="keyword">--chart-height</span> <span class="string">500</span>
+            </div>
+            
+            <h3>响应式图表转换</h3>
+            <div class="code-block">
+<span class="comment"># 响应式SVG图表</span>
+python main.py input.xlsx -o output.html <span class="keyword">--chart-responsive</span> <span class="keyword">--chart-format</span> <span class="string">svg</span>
+            </div>
+            
+            <h3>主题化图表转换</h3>
+            <div class="code-block">
+<span class="comment"># 暗色主题图表</span>
+python main.py input.xlsx -o output.html <span class="keyword">--theme</span> <span class="string">dark</span> <span class="keyword">--chart-format</span> <span class="string">svg</span>
+
+<span class="comment"># 极简主题图表</span>
+python main.py input.xlsx -o output.html <span class="keyword">--theme</span> <span class="string">minimal</span> <span class="keyword">--chart-quality</span> <span class="string">low</span>
+            </div>
+            
+            <h3>禁用图表转换</h3>
+            <div class="code-block">
+<span class="comment"># 如果不需要图表转换</span>
+python main.py input.xlsx -o output.html <span class="keyword">--disable-charts</span>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>MCP-Sheet-Parser - 专业的表格解析与图表转换工具</p>
+            <p>支持11种格式 | 4种主题 | 10种图表类型 | 高效转换</p>
+        </div>
+    </div>
+</body>
+</html> 

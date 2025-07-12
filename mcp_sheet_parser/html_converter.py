@@ -271,7 +271,16 @@ class HTMLConverter:
             '@media print {',
             '  body { margin: 0; background: white; }',
             '  table { page-break-inside: avoid; }',
-            '}'
+            '}',
+            
+            # 图表样式
+            '.charts-container { margin: 20px 0; }',
+            '.chart-item { margin-bottom: 30px; border: 1px solid #ddd; border-radius: 8px; padding: 15px; background: #f9f9f9; }',
+            '.chart-title { margin: 0 0 15px 0; color: #333; font-size: 18px; font-weight: bold; }',
+            '.chart-content { text-align: center; }',
+            '.chart-content svg { max-width: 100%; height: auto; border: 1px solid #ccc; border-radius: 4px; }',
+            '.chart-placeholder { border: 2px dashed #ccc; border-radius: 4px; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #f5f5f5; color: #666; }',
+            '.chart-placeholder p { margin: 5px 0; }'
         ]
     
     @error_handler(operation="工作表HTML转换")
@@ -283,39 +292,82 @@ class HTMLConverter:
         merged_cells = sheet.get('merged_cells', [])
         comments = sheet.get('comments', {})
         hyperlinks = sheet.get('hyperlinks', {})
-        
-        if not data:
-            return f'<h2>{sheet_name}</h2><p>表格为空</p>'
+        charts = sheet.get('charts', [])  # 获取图表数据
         
         html_parts = []
         html_parts.append(f'<h2>{sheet_name}</h2>')
-        html_parts.append('<table>')
         
-        # 创建合并单元格映射
-        merged_map = self._create_merged_map(merged_cells)
+        # 处理图表（如果有）
+        if charts:
+            html_parts.append(self._render_charts(charts, include_styles))
         
-        # 处理每一行
-        for row_idx, row_data in enumerate(data):
-            if not any(cell.strip() for cell in row_data if isinstance(cell, str)):
-                continue  # 跳过空行
+        # 处理表格数据
+        if data:
+            html_parts.append('<table>')
             
-            html_parts.append('<tr>')
+            # 创建合并单元格映射
+            merged_map = self._create_merged_map(merged_cells)
             
-            for col_idx, cell_value in enumerate(row_data):
-                # 检查是否是被合并的单元格（不是起始单元格）
-                if (row_idx, col_idx) in merged_map and merged_map[(row_idx, col_idx)] != (row_idx, col_idx):
-                    continue
+            # 处理每一行
+            for row_idx, row_data in enumerate(data):
+                if not any(cell.strip() for cell in row_data if isinstance(cell, str)):
+                    continue  # 跳过空行
                 
-                # 获取单元格样式和属性
-                cell_html = self._create_cell_html(
-                    cell_value, row_idx, col_idx, styles, comments, hyperlinks, 
-                    merged_map, include_styles
-                )
-                html_parts.append(cell_html)
+                html_parts.append('<tr>')
+                
+                for col_idx, cell_value in enumerate(row_data):
+                    # 检查是否是被合并的单元格（不是起始单元格）
+                    if (row_idx, col_idx) in merged_map and merged_map[(row_idx, col_idx)] != (row_idx, col_idx):
+                        continue
+                    
+                    # 获取单元格样式和属性
+                    cell_html = self._create_cell_html(
+                        cell_value, row_idx, col_idx, styles, comments, hyperlinks, 
+                        merged_map, include_styles
+                    )
+                    html_parts.append(cell_html)
+                
+                html_parts.append('</tr>')
             
-            html_parts.append('</tr>')
+            html_parts.append('</table>')
+        else:
+            html_parts.append('<p>表格为空</p>')
         
-        html_parts.append('</table>')
+        return '\n'.join(html_parts)
+    
+    def _render_charts(self, charts: List[Dict], include_styles: bool) -> str:
+        """渲染图表"""
+        if not charts:
+            return ""
+        
+        html_parts = []
+        html_parts.append('<div class="charts-container">')
+        
+        for i, chart in enumerate(charts):
+            chart_type = chart.get('type', 'unknown')
+            title = chart.get('title', f'图表 {i+1}')
+            svg_content = chart.get('svg', '')
+            width = chart.get('width', 600)
+            height = chart.get('height', 400)
+            
+            html_parts.append(f'<div class="chart-item" id="chart-{i}">')
+            html_parts.append(f'<h3 class="chart-title">{title}</h3>')
+            html_parts.append(f'<div class="chart-content">')
+            
+            if svg_content:
+                # 直接嵌入SVG内容
+                html_parts.append(svg_content)
+            else:
+                # 如果没有SVG内容，显示占位符
+                html_parts.append(f'<div class="chart-placeholder" style="width: {width}px; height: {height}px;">')
+                html_parts.append(f'<p>图表类型: {chart_type}</p>')
+                html_parts.append(f'<p>尺寸: {width} x {height}</p>')
+                html_parts.append('</div>')
+            
+            html_parts.append('</div>')
+            html_parts.append('</div>')
+        
+        html_parts.append('</div>')
         return '\n'.join(html_parts)
     
     def _create_merged_map(self, merged_cells: List[Tuple[int, int, int, int]]) -> Dict:
@@ -433,7 +485,7 @@ class HTMLConverter:
         if style_info.get('font_size'):
             styles.append(f'font-size: {style_info["font_size"]}px')
         if style_info.get('font_name'):
-            styles.append(f'font-family: "{style_info["font_name"]}", sans-serif')
+            styles.append(f'font-family: \'{style_info["font_name"]}\', sans-serif')
         if style_info.get('font_color'):
             styles.append(f'color: {style_info["font_color"]}')
         if style_info.get('underline'):
@@ -445,16 +497,17 @@ class HTMLConverter:
         if style_info.get('bg_color'):
             styles.append(f'background-color: {style_info["bg_color"]}')
         
-        # 对齐
+        # 水平对齐 - 增强处理
         if style_info.get('align'):
-            align_map = self.config.ALIGNMENT_MAPPING
-            align_value = align_map.get(style_info['align'], style_info['align'])
-            styles.append(f'text-align: {align_value}')
+            align_value = self._get_alignment_value(style_info['align'])
+            if align_value:
+                styles.append(f'text-align: {align_value}')
         
+        # 垂直对齐 - 增强处理
         if style_info.get('valign'):
-            valign_map = self.config.VERTICAL_ALIGNMENT_MAPPING
-            valign_value = valign_map.get(style_info['valign'], style_info['valign'])
-            styles.append(f'vertical-align: {valign_value}')
+            valign_value = self._get_vertical_alignment_value(style_info['valign'])
+            if valign_value:
+                styles.append(f'vertical-align: {valign_value}')
         
         # 文本换行
         if style_info.get('wrap_text'):
@@ -466,6 +519,78 @@ class HTMLConverter:
             styles.extend(border_styles)
         
         return styles
+    
+    def _get_alignment_value(self, alignment: str) -> str:
+        """获取水平对齐值，支持更多对齐方式"""
+        if not alignment:
+            return None
+        
+        # 使用配置中的映射
+        align_map = self.config.ALIGNMENT_MAPPING
+        alignment_str = str(alignment).strip().lower()
+        
+        # 直接映射
+        if alignment_str in align_map:
+            return align_map[alignment_str]
+        
+        # 处理数字代码
+        try:
+            if alignment_str.isdigit():
+                return align_map.get(alignment_str, 'left')
+        except (ValueError, TypeError):
+            pass
+        
+        # 处理中文对齐方式
+        chinese_mapping = {
+            '左对齐': 'left',
+            '居中': 'center', 
+            '右对齐': 'right',
+            '两端对齐': 'justify',
+            '分散对齐': 'justify',
+            '填充': 'left',
+            '常规': 'left'
+        }
+        
+        if alignment_str in chinese_mapping:
+            return chinese_mapping[alignment_str]
+        
+        # 默认返回原始值或left
+        return alignment_str if alignment_str in ['left', 'center', 'right', 'justify'] else 'left'
+    
+    def _get_vertical_alignment_value(self, alignment: str) -> str:
+        """获取垂直对齐值，支持更多对齐方式"""
+        if not alignment:
+            return None
+        
+        # 使用配置中的映射
+        valign_map = self.config.VERTICAL_ALIGNMENT_MAPPING
+        alignment_str = str(alignment).strip().lower()
+        
+        # 直接映射
+        if alignment_str in valign_map:
+            return valign_map[alignment_str]
+        
+        # 处理数字代码
+        try:
+            if alignment_str.isdigit():
+                return valign_map.get(alignment_str, 'top')
+        except (ValueError, TypeError):
+            pass
+        
+        # 处理中文垂直对齐方式
+        chinese_mapping = {
+            '顶端对齐': 'top',
+            '垂直居中': 'middle',
+            '底端对齐': 'bottom',
+            '垂直两端对齐': 'middle',
+            '垂直分散对齐': 'middle'
+        }
+        
+        if alignment_str in chinese_mapping:
+            return chinese_mapping[alignment_str]
+        
+        # 默认返回原始值或top
+        return alignment_str if alignment_str in ['top', 'middle', 'bottom'] else 'top'
     
     def _convert_border_styles(self, border_info: Dict) -> List[str]:
         """转换边框样式"""

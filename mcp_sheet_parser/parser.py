@@ -102,7 +102,7 @@ class SheetParser:
         self.formula_processor = FormulaProcessor(config) if getattr(self.config, 'ENABLE_FORMULA_PROCESSING', True) else None
         
         # 初始化图表转换器
-        self.chart_converter = ChartConverter(config) if getattr(self.config, 'ENABLE_CHART_CONVERSION', True) else None
+        self.chart_converter = ChartConverter(config, file_path) if getattr(self.config, 'ENABLE_CHART_CONVERSION', True) else None
         
         # 验证文件
         self._validate_file()
@@ -697,6 +697,10 @@ class SheetParser:
                     style['bold'] = True
                 if hasattr(font, 'italic') and font.italic:
                     style['italic'] = True
+                if hasattr(font, 'underline') and font.underline:
+                    style['underline'] = True
+                if hasattr(font, 'strike') and font.strike:
+                    style['strike'] = True
                 if hasattr(font, 'size'):
                     style['font_size'] = font.size
                 if hasattr(font, 'name'):

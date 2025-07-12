@@ -20,7 +20,7 @@ def print_banner():
     ║                                                              ║
     ║  专业的多格式表格解析与HTML转换工具                          ║
     ║                                                              ║
-    ║  ✨ 支持11种格式 | 🎨 4种主题 | 🚀 高效转换                  ║
+    ║  ✨ 支持11种格式 | 🎨 4种主题 | 📊 图表转换 | 🚀 高效转换    ║
     ║                                                              ║
     ╚══════════════════════════════════════════════════════════════╝
     """
@@ -33,10 +33,11 @@ def print_menu():
     
     1️⃣  快速体验 - 基础功能演示
     2️⃣  完整演示 - 运行所有演示
-    3️⃣  创建示例 - 生成示例文件
-    4️⃣  查看文档 - 打开使用指南
-    5️⃣  项目总结 - 查看实现状态
-    6️⃣  打开主页 - 查看主展示页面
+    3️⃣  图表演示 - 专门展示图表转换功能
+    4️⃣  创建示例 - 生成示例文件
+    5️⃣  查看文档 - 打开使用指南
+    6️⃣  项目总结 - 查看实现状态
+    7️⃣  打开主页 - 查看主展示页面
     0️⃣  退出演示
     
     """
@@ -125,6 +126,35 @@ def full_demo():
             print(f"❌ 执行出错: {e}")
     else:
         print("❌ 找不到演示脚本")
+
+def chart_demo():
+    """图表演示"""
+    print("\n📊 开始图表演示...")
+    print("=" * 50)
+    
+    # 运行图表演示脚本
+    chart_script = Path(__file__).parent / "演示脚本" / "chart_demo.py"
+    
+    if chart_script.exists():
+        print("🔄 运行图表演示脚本...")
+        try:
+            # 使用编码修复脚本运行
+            fix_script = Path(__file__).parent / "fix_encoding.py"
+            if fix_script.exists():
+                subprocess.run([sys.executable, str(fix_script), str(chart_script)], check=True)
+            else:
+                # 直接运行，但设置环境变量
+                env = os.environ.copy()
+                if os.name == 'nt':
+                    env['PYTHONIOENCODING'] = 'utf-8'
+                    env['PYTHONLEGACYWINDOWSSTDIO'] = 'utf-8'
+                subprocess.run([sys.executable, str(chart_script)], check=True, env=env)
+        except subprocess.CalledProcessError as e:
+            print(f"❌ 图表演示脚本执行失败: {e}")
+        except Exception as e:
+            print(f"❌ 执行出错: {e}")
+    else:
+        print("❌ 找不到图表演示脚本")
 
 def create_samples():
     """创建示例文件"""
@@ -250,15 +280,17 @@ def main():
             elif choice == '2':
                 full_demo()
             elif choice == '3':
-                create_samples()
+                chart_demo()
             elif choice == '4':
-                open_docs()
+                create_samples()
             elif choice == '5':
-                show_summary()
+                open_docs()
             elif choice == '6':
+                show_summary()
+            elif choice == '7':
                 open_homepage()
             else:
-                print("❌ 无效选项，请重新选择")
+                print("❌ 无效选项，请重新选择 (0-7)")
             
             input("\n按回车键继续...")
             

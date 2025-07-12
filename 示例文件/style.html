@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>wps_sample</title>
+<title>style</title>
 <style>
 body { font-family: Arial, sans-serif; margin: 20px; background-color: #f5f5f5; }
 table { border-collapse: collapse; width: 100%; background-color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
@@ -34,60 +34,26 @@ th { background-color: #f8f9fa; font-weight: bold; color: #333; }
   body { margin: 0; background: white; }
   table { page-break-inside: avoid; }
 }
-.charts-container { margin: 20px 0; }
-.chart-item { margin-bottom: 30px; border: 1px solid #ddd; border-radius: 8px; padding: 15px; background: #f9f9f9; }
-.chart-title { margin: 0 0 15px 0; color: #333; font-size: 18px; font-weight: bold; }
-.chart-content { text-align: center; }
-.chart-content svg { max-width: 100%; height: auto; border: 1px solid #ccc; border-radius: 4px; }
-.chart-placeholder { border: 2px dashed #ccc; border-radius: 4px; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #f5f5f5; color: #666; }
-.chart-placeholder p { margin: 5px 0; }
 </style>
 </head>
 <body>
-<h1>wps_sample</h1>
-<h2>WPS表格示例</h2>
+<h1>style</h1>
+<h2>Sheet1</h2>
 <table>
 <tr>
-<th>姓名</th>
-<th>年龄</th>
-<th>部门</th>
-<th>薪资</th>
-<th>入职日期</th>
+<th style="font-weight: bold; font-size: 11.0px; font-family: 'Adobe Myungjo Std M', sans-serif; vertical-align: middle">加粗</th>
+<th style="font-size: 11.0px; font-family: 'Adobe Myungjo Std M', sans-serif; background-color: #FFFF00; vertical-align: middle">黄色</th>
+<th style="font-size: 11.0px; font-family: 'Adobe Myungjo Std M', sans-serif; text-align: center; vertical-align: middle">居中</th>
+<th style="font-size: 11.0px; font-family: 'Adobe Myungjo Std M', sans-serif; text-align: right">靠右</th>
 </tr>
 <tr>
-<td>张三</td>
-<td>25</td>
-<td>技术部</td>
-<td>8000</td>
-<td>2020-01-15</td>
+<td colspan="4" class="merged-cell" style="font-size: 11.0px; font-family: 'Adobe Myungjo Std M', sans-serif; text-align: center; vertical-align: middle">合并</td>
 </tr>
 <tr>
-<td>李四</td>
-<td>30</td>
-<td>市场部</td>
-<td>12000</td>
-<td>2019-03-20</td>
-</tr>
-<tr>
-<td>王五</td>
-<td>35</td>
-<td>人事部</td>
-<td>9000</td>
-<td>2018-07-10</td>
-</tr>
-<tr>
-<td>赵六</td>
-<td>28</td>
-<td>财务部</td>
-<td>10000</td>
-<td>2021-02-28</td>
-</tr>
-<tr>
-<td>钱七</td>
-<td>32</td>
-<td>技术部</td>
-<td>15000</td>
-<td>2017-11-05</td>
+<td style="font-style: italic; font-size: 11.0px; font-family: 'Adobe Myungjo Std M', sans-serif; vertical-align: middle">倾斜</td>
+<td style="font-size: 11.0px; font-family: 'Adobe Myungjo Std M', sans-serif; text-decoration: line-through; vertical-align: middle">删除线</td>
+<td style="font-size: 11.0px; font-family: 'Adobe Myungjo Std M', sans-serif; text-decoration: underline; vertical-align: middle">下划线</td>
+<td style="font-size: 11.0px; font-family: 'Adobe Myungjo Std M', sans-serif; vertical-align: middle"></td>
 </tr>
 </table>
 </body>

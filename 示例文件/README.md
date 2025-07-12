@@ -22,6 +22,9 @@
 - `multi_sheet_sample.xlsx` - 多工作表Excel文件
 - `merged_cells_sample.xlsx` - 包含合并单元格的Excel文件
 
+### 图表示例
+- `chart_demo.xlsx` - 包含多种图表类型的Excel文件（柱状图、饼图、折线图）
+
 ## 使用说明
 
 1. 这些示例文件可以用于测试MCP-Sheet-Parser的各种功能
@@ -29,6 +32,9 @@
 3. 可以通过命令行工具转换这些文件：
    ```bash
    python main.py 示例文件/excel/basic_sample.xlsx --o output.html
+   
+   # 转换包含图表的文件
+   python main.py 示例文件/chart_demo.xlsx --o chart_output.html --enable-charts
    ```
 
 ## 文件特性
@@ -45,6 +51,7 @@
 - 超链接
 - 多工作表
 - 复杂样式
+- 图表转换
 
 ### 特殊功能
 - 多语言支持
