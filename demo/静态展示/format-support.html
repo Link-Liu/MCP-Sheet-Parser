@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP-Sheet-Parser - 格式支持展示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .format-overview {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .format-overview h2 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .format-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        .format-table th,
+        .format-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .format-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: bold;
+        }
+
+        .format-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .format-table tr:hover {
+            background-color: #e9ecef;
+        }
+
+        .support-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .support-full {
+            background: #28a745;
+            color: white;
+        }
+
+        .support-basic {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .support-experimental {
+            background: #dc3545;
+            color: white;
+        }
+
+        .demo-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .demo-section h2 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .demo-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            border-left: 5px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .demo-card:hover {
+            background: #e9ecef;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .demo-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .demo-card p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .demo-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .demo-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .feature-highlights {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .feature-highlights h2 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .feature-item {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .feature-item h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .feature-item p {
+            color: #666;
+        }
+
+        .back-link {
+            display: inline-block;
+            padding: 15px 30px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            padding: 20px;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .demo-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .feature-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← 返回主页</a>
+        
+        <div class="header">
+            <h1>📁 格式支持展示</h1>
+            <p>MCP-Sheet-Parser 支持11种主流表格格式的完美转换</p>
+        </div>
+
+        <div class="format-overview">
+            <h2>🎯 支持格式总览</h2>
+            <table class="format-table">
+                <thead>
+                    <tr>
+                        <th>格式类型</th>
+                        <th>扩展名</th>
+                        <th>支持级别</th>
+                        <th>主要特性</th>
+                        <th>说明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Excel 2007+</strong></td>
+                        <td>.xlsx, .xlsm, .xltx, .xltm</td>
+                        <td><span class="support-badge support-full">完全支持</span></td>
+                        <td>现代Excel格式，完整功能</td>
+                        <td>支持所有高级功能，包括样式、公式、图表等</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Excel 97-2003</strong></td>
+                        <td>.xls, .xlt</td>
+                        <td><span class="support-badge support-basic">基础支持</span></td>
+                        <td>传统Excel格式</td>
+                        <td>支持基本数据解析和样式转换</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Excel 二进制</strong></td>
+                        <td>.xlsb</td>
+                        <td><span class="support-badge support-basic">基础支持</span></td>
+                        <td>二进制Excel格式</td>
+                        <td>支持数据、样式、批注、超链接、公式</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CSV</strong></td>
+                        <td>.csv</td>
+                        <td><span class="support-badge support-full">完全支持</span></td>
+                        <td>通用表格格式</td>
+                        <td>支持多语言、复杂格式、特殊字符</td>
+                    </tr>
+                    <tr>
+                        <td><strong>WPS Office</strong></td>
+                        <td>.et, .ett, .ets</td>
+                        <td><span class="support-badge support-basic">基础支持</span></td>
+                        <td>WPS表格格式</td>
+                        <td>支持数据、样式、批注、超链接、合并单元格</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="demo-section">
+            <h2>🎮 格式演示</h2>
+            <div class="demo-grid">
+                <div class="demo-card">
+                    <h3>📊 Excel 基础转换</h3>
+                    <p>展示Excel文件的基础转换功能，包括数据解析和基本样式映射。</p>
+                    <a href="basic_conversion.html" class="demo-link" target="_blank">查看演示</a>
+                </div>
+                
+                <div class="demo-card">
+                    <h3>📄 CSV 格式转换</h3>
+                    <p>展示CSV文件的转换效果，支持多语言和特殊字符处理。</p>
+                    <a href="csv_conversion.html" class="demo-link" target="_blank">查看演示</a>
+                </div>
+                
+                <div class="demo-card">
+                    <h3>🔧 复杂功能演示</h3>
+                    <p>展示包含公式、批注、超链接等高级功能的Excel文件转换。</p>
+                    <a href="complex_features.html" class="demo-link" target="_blank">查看演示</a>
+                </div>
+                
+                <div class="demo-card">
+                    <h3>📋 多工作表演示</h3>
+                    <p>展示包含多个工作表的Excel文件转换效果。</p>
+                    <a href="multi_sheet.html" class="demo-link" target="_blank">查看演示</a>
+                </div>
+                
+                <div class="demo-card">
+                    <h3>🔗 合并单元格演示</h3>
+                    <p>展示合并单元格的处理效果和样式保持。</p>
+                    <a href="merged_cells.html" class="demo-link" target="_blank">查看演示</a>
+                </div>
+                
+                <div class="demo-card">
+                    <h3>🎨 主题切换演示</h3>
+                    <p>展示不同主题下的转换效果对比。</p>
+                    <a href="theme_dark.html" class="demo-link" target="_blank">暗色主题</a>
+                    <a href="theme_minimal.html" class="demo-link" target="_blank" style="margin-left: 10px;">极简主题</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="feature-highlights">
+            <h2>✨ 功能亮点</h2>
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">🚀</div>
+                    <h3>快速转换</h3>
+                    <p>高效的解析算法，支持大文件快速处理</p>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">🎨</div>
+                    <h3>样式完整</h3>
+                    <p>完整的样式映射，保持原始表格的视觉效果</p>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">📊</div>
+                    <h3>公式支持</h3>
+                    <p>支持Excel公式的结构化输出和结果计算</p>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">🔗</div>
+                    <h3>交互功能</h3>
+                    <p>支持批注、超链接等交互元素的转换</p>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">📱</div>
+                    <h3>响应式设计</h3>
+                    <p>自动适配移动设备，提供良好的浏览体验</p>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">🔒</div>
+                    <h3>安全可靠</h3>
+                    <p>内置安全检查，防止XSS攻击和恶意内容</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🚀 MCP-Sheet-Parser - 让表格转换变得简单高效</p>
+            <p>支持11种格式，4种主题，完整功能覆盖</p>
+        </div>
+    </div>
+</body>
+</html> 

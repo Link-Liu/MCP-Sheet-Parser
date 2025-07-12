@@ -14,6 +14,7 @@ from .exceptions import (
     HTMLConversionError, SecurityError, ConfigurationError,
     error_handler, safe_execute, create_error_context
 )
+import html
 
 
 class HTMLConverter:
@@ -237,9 +238,10 @@ class HTMLConverter:
             '.merged-cell { background-color: #f0f8ff; }',
             
             # 注释样式
-            '.comment-cell { position: relative; }',
-            '.comment-cell::after { content: "📝"; position: absolute; top: 2px; right: 2px; font-size: 10px; }',
-            '.comment-tooltip { display: none; position: absolute; background: #fff; border: 1px solid #ccc; padding: 5px; z-index: 1000; }',
+            '.comment-cell { position: relative; cursor: help; }',
+            '.comment-cell::after { content: "📝"; position: absolute; top: 2px; right: 2px; font-size: 10px; color: #666; }',
+            '.comment-tooltip { display: none; position: absolute; top: 100%; left: 0; background: #333; color: #fff; padding: 8px 12px; border-radius: 4px; font-size: 12px; z-index: 1000; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }',
+            '.comment-tooltip::before { content: ""; position: absolute; top: -5px; left: 10px; border-left: 5px solid transparent; border-right: 5px solid transparent; border-bottom: 5px solid #333; }',
             '.comment-cell:hover .comment-tooltip { display: block; }',
             
             # 超链接样式
@@ -283,7 +285,7 @@ class HTMLConverter:
         hyperlinks = sheet.get('hyperlinks', {})
         
         if not data:
-            return f'<h2>{sheet_name}</h2><p>工作表为空</p>'
+            return f'<h2>{sheet_name}</h2><p>表格为空</p>'
         
         html_parts = []
         html_parts.append(f'<h2>{sheet_name}</h2>')
@@ -361,37 +363,49 @@ class HTMLConverter:
         
         # 处理公式
         cell_content, formula_tooltip = self._process_formula_content(cell_value, style_info)
+        is_formula_html = '<span' in cell_content  # 检查是否包含HTML标签
         
         # 处理超链接
         if cell_key in hyperlinks:
             css_classes.append('hyperlink-cell')
             url = hyperlinks[cell_key]
-            cell_content = f'<a href="{url}" target="_blank">{cell_content}</a>'
+            if is_formula_html:
+                # 公式内容已经是HTML，不需要转义
+                cell_content = f'<a href="{html.escape(url)}" target="_blank">{cell_content}</a>'
+            else:
+                cell_content = f'<a href="{html.escape(url)}" target="_blank">{html.escape(cell_content)}</a>'
+        else:
+            # 对于公式内容，如果已经包含HTML标签，则不转义
+            if not is_formula_html:
+                cell_content = html.escape(cell_content)
         
         # 处理注释
         comment_html = ''
-        if cell_key in comments:
+        if cell_key in comments and self.config.INCLUDE_COMMENTS:
             css_classes.append('comment-cell')
-            comment_text = comments[cell_key].replace('"', '&quot;')
-            comment_html = f'<div class="comment-tooltip">{comment_text}</div>'
+            comment_html = f'<div class="comment-tooltip">{html.escape(comments[cell_key])}</div>'
         
         # 组装单元格
         tag = 'th' if row_idx == 0 else 'td'
         
         # 构建class属性
         if css_classes:
-            cell_attrs.append(f'class="{" ".join(css_classes)}"')
-        
+            class_str = ' '.join(css_classes)
+            cell_attrs.append(f'class="{class_str}"')
         # 构建style属性
         if css_styles:
-            cell_attrs.append(f'style="{"; ".join(css_styles)}"')
+            style_str = '; '.join(css_styles)
+            cell_attrs.append(f'style="{style_str}"')
         
-        # 添加公式tooltip
+        # 只添加公式tooltip到title属性（评论使用CSS tooltip）
         if formula_tooltip:
-            cell_attrs.append(f'title="{formula_tooltip}"')
+            cell_attrs.append(f'title="{html.escape(formula_tooltip)}"')
         
-        attrs_str = f' {" ".join(cell_attrs)}' if cell_attrs else ''
-        
+        # 构建属性字符串
+        if cell_attrs:
+            attrs_str = ' ' + ' '.join(cell_attrs)
+        else:
+            attrs_str = ''
         return f'<{tag}{attrs_str}>{cell_content}{comment_html}</{tag}>'
     
     def _calculate_span(self, merged_map: Dict, row_idx: int, col_idx: int) -> Tuple[int, int]:
@@ -471,31 +485,48 @@ class HTMLConverter:
     
     def _process_formula_content(self, cell_value: str, style_info: Dict) -> Tuple[str, str]:
         """处理公式内容"""
+        # 导入FormulaInfo以避免循环导入
+        from .formula_processor import FormulaInfo, FormulaError
+        
         # 检查是否包含公式信息
-        if hasattr(cell_value, '__dict__') and isinstance(cell_value, FormulaInfo):
+        if isinstance(cell_value, FormulaInfo):
             formula_info = cell_value
             
             # 构建显示内容
             classes = ['formula-cell']
-            if formula_info.error and formula_info.error != FormulaError.NONE:
+            if formula_info.error:
                 classes.append('formula-error')
             
             # 构建tooltip
-            formula_type = formula_info.formula_type or "未知"
-            tooltip_parts = [f"公式: {formula_info.formula} ({formula_type})"]
+            formula_type = getattr(formula_info, 'formula_type', "未知")
+            if hasattr(formula_type, 'value'):
+                formula_type = formula_type.value
             
-            if formula_info.error and formula_info.error != FormulaError.NONE:
-                tooltip_parts.append(f"[错误: {formula_info.error.value}]")
+            tooltip_parts = [f"公式: {formula_info.original_formula} ({formula_type})"]
+            
+            if formula_info.error:
+                error_value = formula_info.error.value if hasattr(formula_info.error, 'value') else str(formula_info.error)
+                tooltip_parts.append(f"[错误: {error_value}]")
             
             tooltip = " ".join(tooltip_parts)
             
             # 构建显示内容
             parts = ['<span class="formula-indicator">ƒ</span>']
             
-            if formula_info.result is not None:
-                parts.append(f'<span class="formula-result">{formula_info.result}</span>')
-            elif formula_info.error and formula_info.error != FormulaError.NONE:
-                parts.append(f'<span class="formula-result">{formula_info.error.value}</span>')
+            if formula_info.calculated_value is not None:
+                # 格式化计算结果
+                result = formula_info.calculated_value
+                if isinstance(result, float):
+                    if result.is_integer():
+                        result_str = str(int(result))
+                    else:
+                        result_str = f"{result:.6g}"
+                else:
+                    result_str = str(result)
+                parts.append(f'<span class="formula-result">{result_str}</span>')
+            elif formula_info.error:
+                error_value = formula_info.error.value if hasattr(formula_info.error, 'value') else str(formula_info.error)
+                parts.append(f'<span class="formula-result">{error_value}</span>')
             else:
                 parts.append('<span class="formula-result">#ERROR</span>')
             

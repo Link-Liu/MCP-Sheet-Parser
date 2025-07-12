@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP-Sheet-Parser - 专业表格解析与HTML转换工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 3em;
+            font-weight: bold;
+            color: #667eea;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 1.1em;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .features-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .features-section h2 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .feature-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .feature-card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .feature-card li {
+            padding: 5px 0;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .feature-card li:before {
+            content: "✅";
+            position: absolute;
+            left: 0;
+            color: #28a745;
+        }
+
+        .format-support {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .format-support h2 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .format-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .format-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .format-card:hover {
+            background: #e9ecef;
+            transform: scale(1.05);
+        }
+
+        .format-extension {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .format-name {
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .support-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .support-full {
+            background: #28a745;
+            color: white;
+        }
+
+        .support-basic {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .demo-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .demo-section h2 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .demo-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .demo-btn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .demo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            padding: 20px;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .format-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .demo-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 MCP-Sheet-Parser</h1>
+            <p>专业的多格式表格解析与HTML转换工具</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-number">11</span>
+                <div class="stat-label">支持格式</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">4</span>
+                <div class="stat-label">精美主题</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">100%</span>
+                <div class="stat-label">任务完成</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">∞</span>
+                <div class="stat-label">扩展可能</div>
+            </div>
+        </div>
+
+        <div class="features-section">
+            <h2>✨ 核心特性</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>🚀 快速转换</h3>
+                    <ul>
+                        <li>高效解析Excel、CSV、WPS等表格文件</li>
+                        <li>支持批量处理</li>
+                        <li>大文件优化处理</li>
+                        <li>内存使用优化</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🎨 样式丰富</h3>
+                    <ul>
+                        <li>4种内置精美主题</li>
+                        <li>完整的样式映射</li>
+                        <li>响应式设计</li>
+                        <li>移动设备适配</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>📊 功能完整</h3>
+                    <ul>
+                        <li>合并单元格支持</li>
+                        <li>单元格批注</li>
+                        <li>超链接转换</li>
+                        <li>公式结构化输出</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🔒 安全可靠</h3>
+                    <ul>
+                        <li>内置安全检查</li>
+                        <li>防止XSS攻击</li>
+                        <li>文件路径验证</li>
+                        <li>内容过滤机制</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="format-support">
+            <h2>📁 格式支持</h2>
+            <div class="format-grid">
+                <div class="format-card">
+                    <div class="format-extension">.xlsx</div>
+                    <div class="format-name">Excel 2007+</div>
+                    <span class="support-badge support-full">完全支持</span>
+                </div>
+                <div class="format-card">
+                    <div class="format-extension">.xlsm</div>
+                    <div class="format-name">Excel 宏</div>
+                    <span class="support-badge support-full">完全支持</span>
+                </div>
+                <div class="format-card">
+                    <div class="format-extension">.xltx</div>
+                    <div class="format-name">Excel 模板</div>
+                    <span class="support-badge support-full">完全支持</span>
+                </div>
+                <div class="format-card">
+                    <div class="format-extension">.xltm</div>
+                    <div class="format-name">Excel 宏模板</div>
+                    <span class="support-badge support-full">完全支持</span>
+                </div>
+                <div class="format-card">
+                    <div class="format-extension">.xls</div>
+                    <div class="format-name">Excel 97-2003</div>
+                    <span class="support-badge support-basic">基础支持</span>
+                </div>
+                <div class="format-card">
+                    <div class="format-extension">.xlt</div>
+                    <div class="format-name">Excel 模板</div>
+                    <span class="support-badge support-basic">基础支持</span>
+                </div>
+                <div class="format-card">
+                    <div class="format-extension">.xlsb</div>
+                    <div class="format-name">Excel 二进制</div>
+                    <span class="support-badge support-basic">基础支持</span>
+                </div>
+                <div class="format-card">
+                    <div class="format-extension">.csv</div>
+                    <div class="format-name">CSV 文件</div>
+                    <span class="support-badge support-full">完全支持</span>
+                </div>
+                <div class="format-card">
+                    <div class="format-extension">.et</div>
+                    <div class="format-name">WPS 表格</div>
+                    <span class="support-badge support-basic">基础支持</span>
+                </div>
+                <div class="format-card">
+                    <div class="format-extension">.ett</div>
+                    <div class="format-name">WPS 模板</div>
+                    <span class="support-badge support-basic">基础支持</span>
+                </div>
+                <div class="format-card">
+                    <div class="format-extension">.ets</div>
+                    <div class="format-name">WPS 备份</div>
+                    <span class="support-badge support-basic">基础支持</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>🎮 演示体验</h2>
+            <div class="demo-buttons">
+                <a href="format-support.html" class="demo-btn">格式支持演示</a>
+                <a href="theme-showcase.html" class="demo-btn">主题展示</a>
+                <a href="basic_conversion.html" class="demo-btn">基础转换</a>
+                <a href="complex_features.html" class="demo-btn">复杂功能</a>
+                <a href="multi_sheet.html" class="demo-btn">多工作表</a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🚀 MCP-Sheet-Parser - 让表格转换变得简单高效</p>
+            <p>支持样式、公式、图表、注释、超链接等完整功能</p>
+        </div>
+    </div>
+</body>
+</html> 

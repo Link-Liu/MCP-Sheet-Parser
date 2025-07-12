@@ -10,6 +10,7 @@ from mcp_sheet_parser.parser import SheetParser
 from mcp_sheet_parser.utils import clean_cell_value
 from mcp_sheet_parser.config import Config
 from mcp_sheet_parser.utils import setup_logger
+from mcp_sheet_parser.exceptions import FileSizeExceededError, FileNotFoundError as MCPFileNotFoundError, UnsupportedFormatError
 
 
 class TestSheetParser(unittest.TestCase):
@@ -31,7 +32,7 @@ class TestSheetParser(unittest.TestCase):
     
     def test_nonexistent_file(self):
         """测试不存在的文件"""
-        with self.assertRaises(FileNotFoundError):
+        with self.assertRaises(MCPFileNotFoundError):
             parser = SheetParser('nonexistent.xlsx', self.config)
     
     def test_unsupported_format(self):
@@ -41,7 +42,7 @@ class TestSheetParser(unittest.TestCase):
             tmp_path = tmp.name
         
         try:
-            with self.assertRaises(ValueError):
+            with self.assertRaises(UnsupportedFormatError):
                 parser = SheetParser(tmp_path, self.config)
         finally:
             os.unlink(tmp_path)
@@ -124,7 +125,7 @@ class TestSheetParser(unittest.TestCase):
             tmp_path = tmp.name
         
         try:
-            with self.assertRaises(ValueError):
+            with self.assertRaises(FileSizeExceededError):
                 parser = SheetParser(tmp_path, small_config)
         finally:
             os.unlink(tmp_path)

@@ -58,12 +58,19 @@ class ProgressTracker:
             percentage = (self.processed / self.total_size) * 100
         
         elapsed_time = time.time() - self.start_time
-        if self.processed > 0:
+        if self.processed > 0 and elapsed_time > 0:
             rate = self.processed / elapsed_time
             remaining = (self.total_size - self.processed) / rate if rate > 0 else 0
         else:
             rate = 0
             remaining = 0
+        
+        # 计算预计完成时间
+        if rate > 0:
+            eta_seconds = remaining / rate
+            eta = f"{eta_seconds:.1f}秒"
+        else:
+            eta = "未知"
         
         return {
             'percentage': min(percentage, 100.0),
@@ -72,8 +79,14 @@ class ProgressTracker:
             'elapsed': elapsed_time,
             'remaining': remaining,
             'rate': rate,
+            'speed': f"{rate:.1f} 项/秒",
+            'eta': eta,  # 添加eta字段
             'description': self.description
         }
+    
+    def is_complete(self) -> bool:
+        """检查是否完成"""
+        return self.processed >= self.total_size
     
     def finish(self):
         """完成进度跟踪"""
@@ -95,6 +108,11 @@ class MemoryMonitor:
         self.process = psutil.Process()
         self.gc_threshold = 0.8  # 80%时触发GC
         
+    @property
+    def max_memory(self) -> int:
+        """最大内存限制（字节）"""
+        return self.max_memory_bytes
+    
     def get_memory_usage(self) -> Dict[str, Any]:
         """获取当前内存使用情况"""
         memory_info = self.process.memory_info()
@@ -103,6 +121,7 @@ class MemoryMonitor:
         return {
             'rss': memory_info.rss,
             'vms': memory_info.vms,
+            'rss_mb': memory_info.rss / (1024 * 1024),
             'percent': memory_percent,
             'max_allowed': self.max_memory_bytes,
             'usage_ratio': memory_info.rss / self.max_memory_bytes
@@ -113,7 +132,7 @@ class MemoryMonitor:
         usage = self.get_memory_usage()
         return usage['usage_ratio'] > self.gc_threshold
     
-    def trigger_gc(self) -> Dict[str, Any]:
+    def trigger_gc(self) -> float:
         """触发垃圾回收"""
         before = self.get_memory_usage()
         
@@ -122,12 +141,8 @@ class MemoryMonitor:
         
         after = self.get_memory_usage()
         
-        return {
-            'collected_objects': collected,
-            'memory_before': before['rss'],
-            'memory_after': after['rss'],
-            'memory_freed': before['rss'] - after['rss']
-        }
+        freed_memory = float(before['rss'] - after['rss'])  # 确保返回float
+        return freed_memory
     
     def get_memory_stats(self) -> str:
         """获取内存统计信息的字符串表示"""
@@ -150,33 +165,32 @@ class PerformanceOptimizer:
             'memory_percent': psutil.virtual_memory().percent
         }
         
-    def optimize_for_file(self, file_path: str) -> Dict[str, Any]:
+    def optimize_for_file(self, file_path: str) -> 'PerformanceConfig':
         """根据文件特征优化性能配置"""
+        from .config.performance import PerformanceConfig
+        
         file_size = Path(file_path).stat().st_size
         file_size_mb = file_size / (1024 * 1024)
+        
+        # 创建配置对象
+        config = PerformanceConfig()
         
         # 基于文件大小的优化策略
         if file_size_mb < 10:
             # 小文件 - 优先处理速度
-            config = {
-                'CHUNK_SIZE': 2000,
-                'ENABLE_PARALLEL': False,
-                'MEMORY_LIMIT': 512
-            }
+            config.CHUNK_SIZE = 2000
+            config.ENABLE_PARALLEL_PROCESSING = False
+            config.MAX_MEMORY_MB = 512
         elif file_size_mb < 100:
             # 中等文件 - 平衡速度和内存
-            config = {
-                'CHUNK_SIZE': 1000,
-                'ENABLE_PARALLEL': True,
-                'MEMORY_LIMIT': 1024
-            }
+            config.CHUNK_SIZE = 1000
+            config.ENABLE_PARALLEL_PROCESSING = True
+            config.MAX_MEMORY_MB = 1024
         else:
             # 大文件 - 优先内存效率
-            config = {
-                'CHUNK_SIZE': 500,
-                'ENABLE_PARALLEL': True,
-                'MEMORY_LIMIT': 2048
-            }
+            config.CHUNK_SIZE = 500
+            config.ENABLE_PARALLEL_PROCESSING = True
+            config.MAX_MEMORY_MB = 2048
         
         return config
 
@@ -188,6 +202,44 @@ class StreamingExcelParser:
         self.chunk_size = chunk_size
         self.memory_monitor = MemoryMonitor() if enable_memory_monitor else None
         
+    def _extract_chunk_data(self, worksheet, start_row: int, end_row: int) -> Dict[str, Any]:
+        """提取数据块"""
+        data = []
+        styles = []
+        comments = {}
+        hyperlinks = {}
+        
+        for row_idx in range(start_row, min(end_row, worksheet.max_row + 1)):
+            data_row = []
+            style_row = []
+            
+            for col_idx in range(1, worksheet.max_column + 1):
+                cell = worksheet.cell(row=row_idx, column=col_idx)
+                
+                # 数据
+                cell_value = cell.value if cell.value is not None else ''
+                data_row.append(clean_cell_value(cell_value))
+                
+                # 样式（简化）
+                style_row.append({})
+                
+                # 注释和超链接（简化）
+                if cell.comment:
+                    comments[f"{row_idx-1}_{col_idx-1}"] = cell.comment.text
+                if cell.hyperlink:
+                    hyperlinks[f"{row_idx-1}_{col_idx-1}"] = str(cell.hyperlink.target)
+            
+            data.append(data_row)
+            styles.append(style_row)
+        
+        return {
+            'data': data,
+            'styles': styles,
+            'comments': comments,
+            'hyperlinks': hyperlinks,
+            'merged_cells': []
+        }
+    
     def parse_in_chunks(self, file_path: str, progress_callback: Optional[Callable] = None) -> Iterator[Dict[str, Any]]:
         """
         分块解析Excel文件
@@ -257,7 +309,7 @@ class StreamingExcelParser:
                 # 内存检查
                 if self.memory_monitor and self.memory_monitor.should_trigger_gc():
                     gc_stats = self.memory_monitor.trigger_gc()
-                    logging.info(f"触发垃圾回收: 释放 {gc_stats['memory_freed'] / 1024 / 1024:.1f}MB")
+                    logging.info(f"触发垃圾回收: 释放 {gc_stats / 1024 / 1024:.1f}MB")
             
             # 处理最后的不完整块
             if current_chunk:
@@ -385,7 +437,34 @@ def create_progress_callback(verbose: bool = False) -> Callable:
     return callback
 
 
-def benchmark_performance(file_path: str) -> Dict[str, Any]:
-    """快速性能基准测试函数"""
-    benchmark = PerformanceBenchmark()
-    return benchmark.run_comprehensive_benchmark(file_path) 
+def benchmark_performance(func: Callable, *args, **kwargs) -> Dict[str, Any]:
+    """基准测试函数性能"""
+    import time
+    
+    start_time = time.time()
+    start_memory = psutil.Process().memory_info().rss
+    
+    try:
+        result = func(*args, **kwargs)
+        success = True
+        error = None
+    except Exception as e:
+        result = None
+        success = False
+        error = str(e)
+    
+    end_time = time.time()
+    end_memory = psutil.Process().memory_info().rss
+    
+    execution_time = end_time - start_time
+    memory_used = end_memory - start_memory
+    
+    return {
+        'success': success,
+        'execution_time': execution_time,
+        'memory_used_mb': memory_used / (1024 * 1024),
+        'memory_delta_mb': memory_used / (1024 * 1024),
+        'peak_memory_mb': max(start_memory, end_memory) / (1024 * 1024),  # 添加peak_memory_mb字段
+        'result': result,
+        'error': error
+    } 

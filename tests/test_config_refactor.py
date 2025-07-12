@@ -15,6 +15,8 @@ from mcp_sheet_parser.config import (
 # 从原config.py模块导入工厂函数和常量
 from mcp_sheet_parser import config as legacy_config
 
+import logging
+
 
 class TestFileFormatConfig(unittest.TestCase):
     """测试文件格式配置"""
@@ -344,7 +346,6 @@ class TestLoggingConfig(unittest.TestCase):
         """测试日志级别转换"""
         config = LoggingConfig()
         
-        import logging
         self.assertEqual(config.get_log_level('DEBUG'), logging.DEBUG)
         self.assertEqual(config.get_log_level('ERROR'), logging.ERROR)
     

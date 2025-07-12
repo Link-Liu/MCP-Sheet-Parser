@@ -82,8 +82,9 @@ class TestHTMLConverter(unittest.TestCase):
         converter = HTMLConverter(data_with_comments)
         html = converter.to_html()
         
-        self.assertIn('title=', html)
-        self.assertIn('This is a header', html)
+        self.assertIn('comment-cell', html)  # 检查CSS类
+        self.assertIn('comment-tooltip', html)  # 检查tooltip元素
+        self.assertIn('This is a header', html)  # 检查评论内容
 
     def test_with_hyperlinks(self):
         """测试包含超链接"""
@@ -106,7 +107,8 @@ class TestHTMLConverter(unittest.TestCase):
         converter = HTMLConverter(data_with_comments, config=config)
         html = converter.to_html()
         
-        self.assertNotIn('title=', html)
+        self.assertNotIn('class="comment-cell"', html)  # 检查表格单元格不包含评论CSS类
+        self.assertNotIn('<div class="comment-tooltip">', html)  # 检查不包含tooltip元素
 
     def test_export_to_file(self):
         """测试导出到文件"""

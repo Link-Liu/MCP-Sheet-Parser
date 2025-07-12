@@ -17,10 +17,10 @@ from mcp_sheet_parser.exceptions import (
 def create_progress_callback():
     """创建进度回调函数"""
     def progress_callback(progress: int, message: str):
-        # 简单的进度显示
+        # 简单的进度显示，使用ASCII字符避免编码问题
         bar_length = 30
         filled_length = int(bar_length * progress // 100)
-        bar = '█' * filled_length + '-' * (bar_length - filled_length)
+        bar = '=' * filled_length + '-' * (bar_length - filled_length)
         print(f'\r进度: |{bar}| {progress}% {message}', end='', flush=True)
         if progress >= 100:
             print()  # 完成时换行

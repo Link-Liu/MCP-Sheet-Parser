@@ -235,7 +235,6 @@ class FormulaCalculator:
     def _extract_dependencies(self, formula: str) -> List[str]:
         """提取公式中的单元格依赖"""
         dependencies = []
-        
         # 查找范围引用 (必须在单元格引用之前，避免被单独匹配)
         range_refs = re.findall(
             r'(?:[^!\s]+!)?[A-Z]+\d+:[A-Z]+\d+',
@@ -243,14 +242,12 @@ class FormulaCalculator:
             re.IGNORECASE
         )
         dependencies.extend(range_refs)
-        
         # 查找单元格引用 (排除已经在范围中的)
         cell_refs = re.findall(
             r'(?:[^!\s]+!)?[A-Z]+\d+',
             formula,
             re.IGNORECASE
         )
-        
         # 过滤掉已经在范围引用中的单元格引用
         for cell_ref in cell_refs:
             is_in_range = False
@@ -259,8 +256,9 @@ class FormulaCalculator:
                     is_in_range = True
                     break
             if not is_in_range:
-                dependencies.append(cell_ref)
-        
+                # 去除前导运算符
+                clean_ref = cell_ref.lstrip('+-*/^% ')
+                dependencies.append(clean_ref)
         return list(set(dependencies))  # 去重
     
     def _evaluate_formula(self, formula: str, current_row: int, current_col: int) -> Tuple[Any, Optional[FormulaError]]:
@@ -330,6 +328,16 @@ class FormulaCalculator:
                 return 0, None  # 空单元格返回0
             
             value = data[row][col]
+            
+            # 检查是否为FormulaInfo对象
+            if isinstance(value, FormulaInfo):
+                # 如果是已计算的公式，返回其计算结果
+                if value.calculated_value is not None:
+                    return value.calculated_value, None
+                elif value.error:
+                    return 0, None  # 有错误的公式返回0
+                else:
+                    return 0, None
             
             # 尝试转换为数值
             if isinstance(value, (int, float)):
@@ -457,6 +465,17 @@ class FormulaCalculator:
                     value = data[row][col]
                     if isinstance(value, (int, float)):
                         values.append(value)
+                    elif hasattr(value, 'calculated_value') and hasattr(value, 'error'):
+                        # 处理FormulaInfo对象
+                        if value.error is None and value.calculated_value is not None:
+                            if isinstance(value.calculated_value, (int, float)):
+                                values.append(value.calculated_value)
+                            elif isinstance(value.calculated_value, str):
+                                # 尝试转换字符串为数值
+                                try:
+                                    values.append(float(value.calculated_value) if '.' in value.calculated_value else int(value.calculated_value))
+                                except ValueError:
+                                    continue
                     elif isinstance(value, str):
                         # 检查是否为公式
                         if value.startswith('='):
@@ -485,13 +504,41 @@ class FormulaCalculator:
         return values
     
     def _substitute_references(self, formula: str) -> str:
-        """替换公式中的单元格引用"""
+        """替换公式中的单元格引用和函数调用"""
+        # 首先处理函数调用
+        def replace_function(match):
+            func_call = match.group(0)
+            try:
+                # 评估函数调用
+                value, error = self._evaluate_function(func_call)
+                if error is None and isinstance(value, (int, float)):
+                    return str(value)
+                else:
+                    return '0'
+            except:
+                return '0'
+        
+        # 替换函数调用
+        formula = re.sub(
+            r'[A-Z]+\s*\([^)]*\)',
+            replace_function,
+            formula,
+            flags=re.IGNORECASE
+        )
+        
         # 替换单元格引用
         def replace_cell_ref(match):
             ref = match.group(0)
             value, error = self._resolve_cell_reference(ref)
-            if error is None and isinstance(value, (int, float)):
-                return str(value)
+            if error is None:
+                if isinstance(value, (int, float)):
+                    return str(value)
+                elif isinstance(value, str):
+                    # 尝试转换字符串为数值
+                    try:
+                        return str(float(value)) if '.' in str(value) else str(int(value))
+                    except ValueError:
+                        return '0'
             return '0'
         
         formula = re.sub(
@@ -830,30 +877,67 @@ class FormulaProcessor:
         enhanced_data = sheet_data.copy()
         enhanced_data['formulas'] = {}
         
-        calculator = FormulaCalculator(sheet_data)
         data = sheet_data.get('data', [])
         
+        # 创建数据的副本，用于替换公式
+        new_data = []
+        for row in data:
+            new_data.append(row.copy())
+        
+        # 首先收集所有公式位置
+        formula_positions = []
         for row_idx, row in enumerate(data):
             for col_idx, cell_value in enumerate(row):
                 if isinstance(cell_value, str) and cell_value.startswith('='):
-                    # 发现公式
-                    formula_key = f"{row_idx}_{col_idx}"
-                    
-                    # 计算公式
-                    formula_info = calculator.calculate_formula(
-                        cell_value, row_idx, col_idx
-                    )
-                    
-                    # 存储公式信息
-                    enhanced_data['formulas'][formula_key] = formula_info
-                    
-                    # 更新统计
-                    self._update_statistics(formula_info)
-                    
-                    # 缓存公式
-                    self.formula_cache[formula_key] = formula_info
-                    
-                    self.logger.debug(f"处理公式 [{row_idx},{col_idx}]: {cell_value}")
+                    formula_positions.append((row_idx, col_idx, cell_value))
+        
+        # 多轮计算，直到所有公式都被处理
+        max_iterations = 10  # 最大迭代次数，避免无限循环
+        calculated_count = 0
+        
+        for iteration in range(max_iterations):
+            # 更新计算器的数据，包含之前计算的结果
+            updated_sheet_data = enhanced_data.copy()
+            updated_sheet_data['data'] = new_data
+            calculator = FormulaCalculator(updated_sheet_data)
+            
+            iteration_calculated = 0
+            
+            for row_idx, col_idx, original_formula in formula_positions:
+                formula_key = f"{row_idx}_{col_idx}"
+                
+                # 如果已经处理过，跳过
+                if formula_key in enhanced_data['formulas']:
+                    continue
+                
+                # 计算公式
+                formula_info = calculator.calculate_formula(
+                    original_formula, row_idx, col_idx
+                )
+                
+                # 存储公式信息
+                enhanced_data['formulas'][formula_key] = formula_info
+                
+                # 将FormulaInfo对象替换到原始数据中
+                new_data[row_idx][col_idx] = formula_info
+                
+                # 更新统计
+                self._update_statistics(formula_info)
+                
+                # 缓存公式
+                self.formula_cache[formula_key] = formula_info
+                
+                iteration_calculated += 1
+                calculated_count += 1
+                
+                self.logger.debug(f"处理公式 [{row_idx},{col_idx}]: {original_formula}")
+            
+            # 如果这一轮没有计算任何新公式，说明完成了
+            if iteration_calculated == 0:
+                break
+        
+        # 更新数据
+        enhanced_data['data'] = new_data
         
         self.logger.info(f"公式处理完成：{self.stats['total_formulas']}个公式，"
                         f"{self.stats['calculated_formulas']}个成功计算")

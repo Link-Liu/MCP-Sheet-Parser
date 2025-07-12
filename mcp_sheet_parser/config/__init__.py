@@ -197,17 +197,33 @@ class UnifiedConfig:
     def ENABLE_FORMULA_PROCESSING(self) -> bool:
         return self.formula.ENABLE_FORMULA_PROCESSING
     
+    @ENABLE_FORMULA_PROCESSING.setter
+    def ENABLE_FORMULA_PROCESSING(self, value: bool):
+        self.formula.ENABLE_FORMULA_PROCESSING = value
+    
     @property
     def SHOW_FORMULA_TEXT(self) -> bool:
         return self.formula.SHOW_FORMULA_TEXT
+    
+    @SHOW_FORMULA_TEXT.setter
+    def SHOW_FORMULA_TEXT(self, value: bool):
+        self.formula.SHOW_FORMULA_TEXT = value
     
     @property
     def CALCULATE_FORMULAS(self) -> bool:
         return self.formula.CALCULATE_FORMULAS
     
+    @CALCULATE_FORMULAS.setter
+    def CALCULATE_FORMULAS(self, value: bool):
+        self.formula.CALCULATE_FORMULAS = value
+    
     @property
     def SHOW_FORMULA_ERRORS(self) -> bool:
         return self.formula.SHOW_FORMULA_ERRORS
+    
+    @SHOW_FORMULA_ERRORS.setter
+    def SHOW_FORMULA_ERRORS(self, value: bool):
+        self.formula.SHOW_FORMULA_ERRORS = value
     
     @property
     def FORMULA_CACHE_SIZE(self) -> int:
@@ -217,25 +233,49 @@ class UnifiedConfig:
     def SUPPORTED_FUNCTIONS_ONLY(self) -> bool:
         return self.formula.SUPPORTED_FUNCTIONS_ONLY
     
+    @SUPPORTED_FUNCTIONS_ONLY.setter
+    def SUPPORTED_FUNCTIONS_ONLY(self, value: bool):
+        self.formula.SUPPORTED_FUNCTIONS_ONLY = value
+    
     @property
     def ENABLE_CHART_CONVERSION(self) -> bool:
         return self.chart.ENABLE_CHART_CONVERSION
+    
+    @ENABLE_CHART_CONVERSION.setter
+    def ENABLE_CHART_CONVERSION(self, value: bool):
+        self.chart.ENABLE_CHART_CONVERSION = value
     
     @property
     def CHART_OUTPUT_FORMAT(self) -> str:
         return self.chart.CHART_OUTPUT_FORMAT
     
+    @CHART_OUTPUT_FORMAT.setter
+    def CHART_OUTPUT_FORMAT(self, value: str):
+        self.chart.CHART_OUTPUT_FORMAT = value
+    
     @property
     def CHART_DEFAULT_WIDTH(self) -> int:
         return self.chart.CHART_DEFAULT_WIDTH
+    
+    @CHART_DEFAULT_WIDTH.setter
+    def CHART_DEFAULT_WIDTH(self, value: int):
+        self.chart.CHART_DEFAULT_WIDTH = value
     
     @property
     def CHART_DEFAULT_HEIGHT(self) -> int:
         return self.chart.CHART_DEFAULT_HEIGHT
     
+    @CHART_DEFAULT_HEIGHT.setter
+    def CHART_DEFAULT_HEIGHT(self, value: int):
+        self.chart.CHART_DEFAULT_HEIGHT = value
+    
     @property
     def CHART_QUALITY(self) -> str:
         return self.chart.CHART_QUALITY
+    
+    @CHART_QUALITY.setter
+    def CHART_QUALITY(self, value: str):
+        self.chart.CHART_QUALITY = value
     
     @property
     def SUPPORTED_CHART_TYPES(self) -> list:
@@ -252,6 +292,10 @@ class UnifiedConfig:
     @property
     def CHART_RESPONSIVE(self) -> bool:
         return self.chart.CHART_RESPONSIVE
+    
+    @CHART_RESPONSIVE.setter
+    def CHART_RESPONSIVE(self, value: bool):
+        self.chart.CHART_RESPONSIVE = value
     
     @property
     def CHART_ANIMATIONS(self) -> bool:
@@ -396,3 +440,44 @@ class ErrorMessages:
     # 一般错误
     UNKNOWN_ERROR: str = "未知错误: {error}"
     INVALID_PARAMETER: str = "无效参数: {parameter}" 
+
+# ====== 向后兼容的配置工厂函数 ======
+def create_config_for_performance():
+    """性能优化配置工厂"""
+    return UnifiedConfig().optimize_for_performance()
+
+def create_config_for_quality():
+    """质量优化配置工厂"""
+    return UnifiedConfig().optimize_for_quality()
+
+def create_config_for_web():
+    """Web优化配置工厂"""
+    config = UnifiedConfig()
+    config.chart = config.chart.optimize_for_web()
+    config.html = config.html.optimize_for_size()
+    return config
+
+def create_config_for_print():
+    """打印优化配置工厂"""
+    config = UnifiedConfig()
+    config.chart = config.chart.optimize_for_print()
+    return config
+
+def create_minimal_config():
+    """极简配置工厂（关闭公式和图表）"""
+    config = UnifiedConfig()
+    config.formula.ENABLE_FORMULA_PROCESSING = False
+    config.chart.ENABLE_CHART_CONVERSION = False
+    return config
+
+def create_development_config():
+    """开发环境配置工厂"""
+    config = UnifiedConfig()
+    config.logging = config.logging.optimize_for_development()
+    return config
+
+def create_production_config():
+    """生产环境配置工厂"""
+    config = UnifiedConfig()
+    config.logging = config.logging.optimize_for_production()
+    return config 

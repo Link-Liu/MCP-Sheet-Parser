@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP-Sheet-Parser - 主题展示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .theme-overview {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .theme-overview h2 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .theme-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+        }
+
+        .theme-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .theme-card.default {
+            border-color: #667eea;
+        }
+
+        .theme-card.minimal {
+            border-color: #6c757d;
+        }
+
+        .theme-card.dark {
+            border-color: #343a40;
+        }
+
+        .theme-card.print {
+            border-color: #28a745;
+        }
+
+        .theme-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .theme-card h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .theme-card p {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .theme-features {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .theme-features li {
+            padding: 5px 0;
+            color: #555;
+        }
+
+        .theme-features li:before {
+            content: "✓";
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .theme-link {
+            display: inline-block;
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .theme-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .demo-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .demo-section h2 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .demo-comparison {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+        }
+
+        .demo-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            border-left: 5px solid #667eea;
+        }
+
+        .demo-item h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .demo-item p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .demo-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .demo-btn {
+            padding: 8px 16px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 20px;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .demo-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-1px);
+        }
+
+        .theme-info {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .theme-info h2 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .info-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+        }
+
+        .info-item h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .info-item ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .info-item li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .info-item li:last-child {
+            border-bottom: none;
+        }
+
+        .back-link {
+            display: inline-block;
+            padding: 15px 30px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            padding: 20px;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .theme-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .demo-comparison {
+                grid-template-columns: 1fr;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← 返回主页</a>
+        
+        <div class="header">
+            <h1>🎨 主题展示</h1>
+            <p>MCP-Sheet-Parser 提供4种精美主题，满足不同使用场景</p>
+        </div>
+
+        <div class="theme-overview">
+            <h2>🎯 主题总览</h2>
+            <div class="theme-grid">
+                <div class="theme-card default">
+                    <div class="theme-icon">🎨</div>
+                    <h3>默认主题</h3>
+                    <p>平衡美观与实用的标准主题，适合大多数使用场景</p>
+                    <ul class="theme-features">
+                        <li>专业的外观设计</li>
+                        <li>良好的可读性</li>
+                        <li>完整的样式支持</li>
+                        <li>响应式布局</li>
+                    </ul>
+                    <a href="basic_conversion.html" class="theme-link" target="_blank">查看效果</a>
+                </div>
+                
+                <div class="theme-card minimal">
+                    <div class="theme-icon">✨</div>
+                    <h3>极简主题</h3>
+                    <p>清爽干净的设计风格，突出内容本身</p>
+                    <ul class="theme-features">
+                        <li>简洁的设计风格</li>
+                        <li>减少视觉干扰</li>
+                        <li>快速加载</li>
+                        <li>专注内容展示</li>
+                    </ul>
+                    <a href="theme_minimal.html" class="theme-link" target="_blank">查看效果</a>
+                </div>
+                
+                <div class="theme-card dark">
+                    <div class="theme-icon">🌙</div>
+                    <h3>暗色主题</h3>
+                    <p>护眼舒适的暗色设计，适合夜间使用</p>
+                    <ul class="theme-features">
+                        <li>护眼舒适</li>
+                        <li>夜间友好</li>
+                        <li>现代感强</li>
+                        <li>减少眼疲劳</li>
+                    </ul>
+                    <a href="theme_dark.html" class="theme-link" target="_blank">查看效果</a>
+                </div>
+                
+                <div class="theme-card print">
+                    <div class="theme-icon">🖨️</div>
+                    <h3>打印主题</h3>
+                    <p>专为打印优化的黑白主题，节省墨水</p>
+                    <ul class="theme-features">
+                        <li>打印优化</li>
+                        <li>黑白适配</li>
+                        <li>节省墨水</li>
+                        <li>清晰可读</li>
+                    </ul>
+                    <a href="basic_conversion.html" class="theme-link" target="_blank">查看效果</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>🎮 主题对比演示</h2>
+            <div class="demo-comparison">
+                <div class="demo-item">
+                    <h3>📊 基础表格转换</h3>
+                    <p>展示不同主题下基础表格的转换效果对比</p>
+                    <div class="demo-buttons">
+                        <a href="basic_conversion.html" class="demo-btn" target="_blank">默认主题</a>
+                        <a href="theme_minimal.html" class="demo-btn" target="_blank">极简主题</a>
+                        <a href="theme_dark.html" class="demo-btn" target="_blank">暗色主题</a>
+                    </div>
+                </div>
+                
+                <div class="demo-item">
+                    <h3>🔧 复杂功能演示</h3>
+                    <p>展示包含公式、批注等高级功能的主题效果</p>
+                    <div class="demo-buttons">
+                        <a href="complex_features.html" class="demo-btn" target="_blank">查看演示</a>
+                    </div>
+                </div>
+                
+                <div class="demo-item">
+                    <h3>📋 多工作表展示</h3>
+                    <p>展示多工作表在不同主题下的显示效果</p>
+                    <div class="demo-buttons">
+                        <a href="multi_sheet.html" class="demo-btn" target="_blank">查看演示</a>
+                    </div>
+                </div>
+                
+                <div class="demo-item">
+                    <h3>🔗 合并单元格演示</h3>
+                    <p>展示合并单元格在不同主题下的样式效果</p>
+                    <div class="demo-buttons">
+                        <a href="merged_cells.html" class="demo-btn" target="_blank">查看演示</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="theme-info">
+            <h2>📋 主题特性说明</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <h3>🎨 样式特性</h3>
+                    <ul>
+                        <li><strong>字体样式</strong>: 支持粗体、斜体、字号、颜色</li>
+                        <li><strong>背景颜色</strong>: 完整的背景色映射</li>
+                        <li><strong>边框样式</strong>: 支持各种边框类型</li>
+                        <li><strong>对齐方式</strong>: 水平和垂直对齐</li>
+                        <li><strong>合并单元格</strong>: 完整的合并支持</li>
+                    </ul>
+                </div>
+                
+                <div class="info-item">
+                    <h3>📱 响应式设计</h3>
+                    <ul>
+                        <li><strong>移动适配</strong>: 自动适配移动设备</li>
+                        <li><strong>屏幕尺寸</strong>: 支持各种屏幕尺寸</li>
+                        <li><strong>触摸友好</strong>: 优化触摸操作体验</li>
+                        <li><strong>滚动优化</strong>: 流畅的滚动体验</li>
+                        <li><strong>加载速度</strong>: 快速加载和渲染</li>
+                    </ul>
+                </div>
+                
+                <div class="info-item">
+                    <h3>🔧 高级功能</h3>
+                    <ul>
+                        <li><strong>公式支持</strong>: 结构化公式输出</li>
+                        <li><strong>批注功能</strong>: 悬停显示批注</li>
+                        <li><strong>超链接</strong>: 新窗口打开链接</li>
+                        <li><strong>图表转换</strong>: 图表元素处理</li>
+                        <li><strong>安全防护</strong>: XSS攻击防护</li>
+                    </ul>
+                </div>
+                
+                <div class="info-item">
+                    <h3>⚡ 性能优化</h3>
+                    <ul>
+                        <li><strong>大文件处理</strong>: 支持大文件快速处理</li>
+                        <li><strong>内存优化</strong>: 高效的内存使用</li>
+                        <li><strong>批量处理</strong>: 支持批量文件转换</li>
+                        <li><strong>缓存机制</strong>: 智能缓存提高效率</li>
+                        <li><strong>并行处理</strong>: 多线程并行处理</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🚀 MCP-Sheet-Parser - 让表格转换变得简单高效</p>
+            <p>4种精美主题，满足不同使用场景需求</p>
+        </div>
+    </div>
+</body>
+</html> 
